@@ -28,9 +28,7 @@ public class TestRunner implements CommandLineRunner {
         });
 
         allUsers.forEach(System.out::println);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String encoded = encoder.encode("password");
-        System.out.println(encoded);
+
     }
 }
 

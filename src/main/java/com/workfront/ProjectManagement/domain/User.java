@@ -2,6 +2,8 @@ package com.workfront.ProjectManagement.domain;
 
 import lombok.ToString;
 
+import java.util.List;
+
 @ToString
 public class User {
     private int id;
@@ -9,6 +11,9 @@ public class User {
     private String lastName;
     private String email;
     private String password;
+
+    private List<Role> roles;
+    private List<Permission> permissions;
 
     public int getId() {
         return id;
@@ -48,5 +53,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
     }
 }

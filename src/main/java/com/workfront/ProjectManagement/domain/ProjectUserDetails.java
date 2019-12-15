@@ -1,9 +1,11 @@
 package com.workfront.ProjectManagement.domain;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class ProjectUserDetails implements UserDetails {
     private User user;
@@ -14,13 +16,11 @@ public class ProjectUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.user.getPermissions().stream().map(permission -> new SimpleGrantedAuthority(permission.getName())).collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        System.out.println("password:" + this.user.getPassword());
-
         return this.user.getPassword();
     }
 
