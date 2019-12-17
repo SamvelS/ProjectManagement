@@ -1,0 +1,23 @@
+.text-danger {
+    color:#dc3545 !important;
+}
+
+.login-form {
+    margin-top: 30px;
+}
+
+.login-form input[type=submit] {
+    margin-top: 20px;
+}
+
+.login-form label {
+    margin-top: 5px;
+}
+
+.login-form input[type=text] {
+    width: 350px;
+}
+
+.login-form input[type=password] {
+    width: 350px;
+}

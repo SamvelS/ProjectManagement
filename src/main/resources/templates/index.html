@@ -17,7 +17,7 @@
                     </li>
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <form method="POST" th:action="@{/logout}">
-                            <input type="submit" value="Logout"/>
+                            <input type="submit" value="Logout" style="border: 0px;"/>
                         </form>
                     </li>
                 </ul>
@@ -25,6 +25,8 @@
         </div>
     </nav>
 </header>
-    Home Page
+    <div class="container">
+        <h1>Home Page</h1>
+    </div>
 </body>
 </html>
