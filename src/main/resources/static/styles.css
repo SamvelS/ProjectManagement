@@ -21,3 +21,33 @@
 .login-form input[type=password] {
     width: 350px;
 }
+
+.navbar-menu {
+    list-style: none;
+    display: flex;
+}
+
+.navbar-menu ul {
+    flex-direction: row;
+}
+
+.navbar-menu li {
+    margin-left: 10px;
+}
+
+.navbar-menu form {
+    margin-top: 7px;
+}
+
+.navbar-menu-left {
+    list-style: none;
+    position: absolute;
+}
+
+.navbar-menu-left  ul {
+    flex-direction: row;
+}
+
+.navbar-menu-left li {
+    margin-left: 10px;
+}

@@ -1,4 +1,4 @@
-package com.workfront.ProjectManagement.services;
+package com.workfront.ProjectManagement.services.impl;
 
 import com.workfront.ProjectManagement.domain.ProjectUserDetails;
 import com.workfront.ProjectManagement.domain.User;

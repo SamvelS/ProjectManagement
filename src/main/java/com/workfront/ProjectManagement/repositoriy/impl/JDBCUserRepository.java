@@ -75,4 +75,24 @@ public class JDBCUserRepository implements UserRepository {
 
         return requestedUser;
     }
+
+    @Override
+    public List<User> getUsers(int from, int count) {
+        List<Map<String, Object>> usersToMap  = this.jdbcTemplate.queryForList("select * from account" +
+                " limit ? offset ?"
+                , new Object[] { count, from });
+
+        List<User> users = new ArrayList<>();
+
+        for(Map row : usersToMap) {
+            User user = new User();
+            user.setId((int)row.get("id"));
+            user.setFirstName((String) row.get("first_name"));
+            user.setLastName((String) row.get("last_name"));
+            user.setEmail((String) row.get("email"));
+
+            users.add(user);
+        }
+        return users;
+    }
 }

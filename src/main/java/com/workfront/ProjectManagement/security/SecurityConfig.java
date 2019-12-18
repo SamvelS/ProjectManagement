@@ -1,7 +1,6 @@
 package com.workfront.ProjectManagement.security;
-import com.workfront.ProjectManagement.services.UserDetailsServiceImpl;
+import com.workfront.ProjectManagement.services.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,8 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/test")
                     .authenticated()
-                .antMatchers("/users/add")
-                    .hasAnyAuthority("create_user")
+                .antMatchers("/users")
+                    .hasAnyAuthority("manage_users")
                 .antMatchers("/")
                     .access("permitAll")
 
