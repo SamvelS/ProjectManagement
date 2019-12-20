@@ -8,4 +8,6 @@ import java.util.List;
 @Service
 public interface UserManagementService {
     List<User> getUsers(int from, int count);
+
+    int getUsersCount();
 }

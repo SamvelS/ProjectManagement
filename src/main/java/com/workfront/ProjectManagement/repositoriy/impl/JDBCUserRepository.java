@@ -79,7 +79,7 @@ public class JDBCUserRepository implements UserRepository {
     @Override
     public List<User> getUsers(int from, int count) {
         List<Map<String, Object>> usersToMap  = this.jdbcTemplate.queryForList("select * from account" +
-                " limit ? offset ?"
+                " order by first_name, last_name limit ? offset ?"
                 , new Object[] { count, from });
 
         List<User> users = new ArrayList<>();
@@ -94,5 +94,10 @@ public class JDBCUserRepository implements UserRepository {
             users.add(user);
         }
         return users;
+    }
+
+    @Override
+    public int getUsersCount() {
+        return this.jdbcTemplate.queryForObject("select count(id) from account", Integer.class);
     }
 }
