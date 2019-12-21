@@ -1,6 +1,8 @@
 package com.workfront.ProjectManagement.web;
 
+import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
+import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.services.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,6 +23,9 @@ public class UserManagementController {
     @Autowired
     private UserManagementService userManagementService;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     @GetMapping
     public String getManageUsersView(/*@RequestParam(value = "from", defaultValue = "1") int from,
                                      @RequestParam(value = "count", defaultValue = "10") int count, Model model*/) {
@@ -39,6 +44,11 @@ public class UserManagementController {
     @GetMapping("/count")
     public ResponseEntity<Integer> getUsersCount() {
         return ResponseEntity.ok(this.userManagementService.getUsersCount());
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getAllRoles() {
+        return ResponseEntity.ok(this.roleRepository.getRoles());
     }
 
     @GetMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
