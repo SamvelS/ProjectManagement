@@ -64,7 +64,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form th:object="${user}">
                         <div class="form-group">
                             <div class="form-label-group">
                                 <input type="text" id="firstName" class="form-control" placeholder="First Name">
@@ -82,7 +82,7 @@
                         </div>
                         <div class="form-group">
                             <div class="form-label-group">
-                                <input type="text" id="password" class="form-control" placeholder="Password">
+                                <input type="password" id="password" class="form-control" placeholder="Password">
                             </div>
                         </div>
 
@@ -99,7 +99,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <span id="saving-user">Saving...</span>
                     <a class="btn btn-primary" href="#" id="save-created-user">Save</a>
                 </div>
             </div>

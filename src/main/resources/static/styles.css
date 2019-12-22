@@ -55,3 +55,7 @@
 .space-from-top {
     margin-top: 10px;
 }
+
+span.validation-error {
+    color: red;
+}
