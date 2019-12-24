@@ -78,22 +78,17 @@ public class JDBCUserRepository implements UserRepository {
     @Override
     @Transactional
     public void createUser(User user) {
-        try {
-            this.jdbcTemplate.update("insert into account(email, password, first_name, last_name, created_on, status_id)" +
-                    " values(?,?,?,?,now(),1)", new Object[]{user.getEmail(),
-                    this.beans.passwordEncoder().encode(user.getPassword()),
-                    user.getFirstName(), user.getLastName()});
+        this.jdbcTemplate.update("insert into account(email, password, first_name, last_name, created_on, status_id)" +
+                " values(?,?,?,?,now(),1)", new Object[]{user.getEmail(),
+                this.beans.passwordEncoder().encode(user.getPassword()),
+                user.getFirstName(), user.getLastName()});
 
-            User createdUser = this.getUserByEmail(user.getEmail());
+        User createdUser = this.getUserByEmail(user.getEmail());
 
-            for (int roleId :
-                    user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {
-                this.jdbcTemplate.update("insert into account_role(account_id, role_id)" +
-                        " values(?,?)", new Object[] {createdUser.getId(), roleId});
-            }
-        }
-        catch (Exception constraintEx) {
-            System.out.println(constraintEx.getMessage());
+        for (int roleId :
+                user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {
+            this.jdbcTemplate.update("insert into account_role(account_id, role_id)" +
+                    " values(?,?)", new Object[]{createdUser.getId(), roleId});
         }
     }
 

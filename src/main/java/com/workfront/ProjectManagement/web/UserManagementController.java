@@ -8,6 +8,7 @@ import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.services.UserManagementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -70,7 +71,15 @@ public class UserManagementController {
             return new ResponseEntity(new Gson().toJson(fieldErrors), HttpStatus.BAD_REQUEST);
         }
 
-        this.userManagementService.createUser(user);
+        try {
+            this.userManagementService.createUser(user);
+        }
+        catch (DuplicateKeyException ignore) {
+            List<Pair<String, String>> fieldErrors = new ArrayList<>();
+            fieldErrors.add(new Pair<>("email", "Email " + user.getEmail() + " already exists"));
+
+            return new ResponseEntity(new Gson().toJson(fieldErrors), HttpStatus.BAD_REQUEST);
+        }
 
         return ResponseEntity.ok("");
     }
