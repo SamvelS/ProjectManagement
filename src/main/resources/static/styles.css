@@ -59,3 +59,7 @@
 span.validation-error {
     color: red;
 }
+
+.checkbox-for-grid {
+    height: 12px;
+}

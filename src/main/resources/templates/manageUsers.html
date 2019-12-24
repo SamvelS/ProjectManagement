@@ -34,7 +34,7 @@
         </nav>
     </header>
     <div class="container">
-        <div class="space-from-top">
+        <div class="space-from-top" id="users-grid-area">
             <table id="users-datagrid" class="easyui-datagrid"
                    rownumbers="true" pagination="true">
                 <thead>
@@ -51,10 +51,12 @@
         </div>
         <div class="space-from-top">
             <button class="btn btn-primary" id="create-user">Create user</button>
+            <button class="btn btn-warning disabled" id="edit-user">Edit user</button>
+            <button class="btn btn-danger disabled" id="delete-user">Delete user</button>
         </div>
     </div>
 
-    <div class="modal fade" id="edit-user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="create-user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

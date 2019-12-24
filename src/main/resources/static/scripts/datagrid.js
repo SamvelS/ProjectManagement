@@ -5,12 +5,41 @@ $(function() {
     $('#create-user').click(function () {
         clearCreateUserPopup();
         $('#saving-user').hide();
-        $('#edit-user-modal').modal('show');
+        $('#create-user-modal').modal('show');
     });
 
     $('#save-created-user').click(async function (event) {
         event.preventDefault();
         await saveUser();
+    });
+
+    $('#users-grid-area').on('change', '.select-user-check', function () {
+        const selectedUsersCount = $('.select-user-check:checked').length;
+
+        if (selectedUsersCount == 1) {
+            $('#edit-user').removeClass('disabled');
+        } else {
+            $('#edit-user').addClass('disabled');
+        }
+
+        if(selectedUsersCount) {
+            $('#delete-user').removeClass('disabled');
+        }
+        else {
+            $('#delete-user').addClass('disabled');
+        }
+    });
+
+    $('#edit-user').click(async function () {
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+    });
+
+    $('#delete-user').click(async function () {
+        if($(this).hasClass('disabled')) {
+            return;
+        }
     });
 });
 
@@ -37,8 +66,8 @@ async function loadUsersData(from = 1, count = 20) {
 
     const users = (await axios.get('/users/data?from=' + from + '&count=' + count)).data.map(({id,firstName, lastName, email}) => ({
         id:`
-                <div style="height: 12px;">
-                    <input type="checkbox" value="${id}">
+                <div class="checkbox-for-grid">
+                    <input type="checkbox" class="select-user-check" value="${id}">
                 </div>`,
             firstName,
             lastName,
@@ -82,7 +111,7 @@ async function saveUser() {
             data
         });
 
-        $('#edit-user-modal').modal('hide');
+        $('#create-user-modal').modal('hide');
         clearCreateUserPopup();
         location.reload();
     }
