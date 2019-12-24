@@ -75,8 +75,6 @@ async function saveUser() {
         roles:roles
     };
 
-    console.log(data);
-
     try {
         const response = await axios({
             method: 'post',
@@ -86,6 +84,7 @@ async function saveUser() {
 
         $('#edit-user-modal').modal('hide');
         clearCreateUserPopup();
+        location.reload();
     }
     catch (error) {
         if(error.response) {

@@ -7,9 +7,11 @@ import java.util.List;
 
 @Component
 public interface UserRepository {
-    User getUserByUsername(String username);
+    User getUserByEmail(String email);
 
     List<User> getUsers(int from, int count);
+
+    void createUser(User user);
 
     int getUsersCount();
 }

@@ -23,4 +23,9 @@ public class UserManagementServiceIpml implements UserManagementService {
     public int getUsersCount() {
         return this.userRepository.getUsersCount();
     }
+
+    @Override
+    public void createUser(User user) {
+        this.userRepository.createUser(user);
+    }
 }

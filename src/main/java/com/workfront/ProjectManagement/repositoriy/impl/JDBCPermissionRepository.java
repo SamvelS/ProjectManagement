@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -17,6 +19,9 @@ public class JDBCPermissionRepository implements PermissionRepository {
 
     @Override
     public List<Permission> getPermissionsForRoles(List<Integer> ids) {
+        if(ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("ids", ids);

@@ -69,6 +69,9 @@ public class UserManagementController {
 
             return new ResponseEntity(new Gson().toJson(fieldErrors), HttpStatus.BAD_REQUEST);
         }
+
+        this.userManagementService.createUser(user);
+
         return ResponseEntity.ok("");
     }
 }

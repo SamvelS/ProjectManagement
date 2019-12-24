@@ -5,9 +5,11 @@ import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.repositoriy.PermissionRepository;
 import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
+import com.workfront.ProjectManagement.utilities.Beans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +28,12 @@ public class JDBCUserRepository implements UserRepository {
     @Autowired
     private PermissionRepository permissionRepository;
 
-    public User getUserByUsername(String username) {
+    @Autowired
+    private Beans beans;
+
+    public User getUserByEmail(String email) {
         User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where email=?",
-                new Object[] { username },
+                new Object[] { email },
                 (rs, i) -> {
                     User user = new User();
                     user.setId(rs.getInt("id"));
@@ -68,6 +73,28 @@ public class JDBCUserRepository implements UserRepository {
             users.add(user);
         }
         return users;
+    }
+
+    @Override
+    @Transactional
+    public void createUser(User user) {
+        try {
+            this.jdbcTemplate.update("insert into account(email, password, first_name, last_name, created_on, status_id)" +
+                    " values(?,?,?,?,now(),1)", new Object[]{user.getEmail(),
+                    this.beans.passwordEncoder().encode(user.getPassword()),
+                    user.getFirstName(), user.getLastName()});
+
+            User createdUser = this.getUserByEmail(user.getEmail());
+
+            for (int roleId :
+                    user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {
+                this.jdbcTemplate.update("insert into account_role(account_id, role_id)" +
+                        " values(?,?)", new Object[] {createdUser.getId(), roleId});
+            }
+        }
+        catch (Exception constraintEx) {
+            System.out.println(constraintEx.getMessage());
+        }
     }
 
     @Override

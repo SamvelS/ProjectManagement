@@ -10,4 +10,6 @@ public interface UserManagementService {
     List<User> getUsers(int from, int count);
 
     int getUsersCount();
+
+    void createUser(User user);
 }
