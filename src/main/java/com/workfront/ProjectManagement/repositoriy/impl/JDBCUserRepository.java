@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,26 +33,24 @@ public class JDBCUserRepository implements UserRepository {
     @Autowired
     private Beans beans;
 
+    @Override
     public User getUserByEmail(String email) {
         User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where email=?",
                 new Object[] { email },
-                (rs, i) -> {
-                    User user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setFirstName(rs.getString("first_name"));
-                    user.setLastName(rs.getString("last_name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setPassword(rs.getString("password"));
-                    return user;
-                });
+                (rs, i) -> this.createUserFromResultSet(rs, i));
 
-        List<Role> userRoles = this.roleRepository.getUserRoles(requestedUser.getId());
+        this.initializeUserRolesAndPermissions(requestedUser);
 
-        requestedUser.setRoles(userRoles);
+        return requestedUser;
+    }
 
-        List<Integer> ids = userRoles.stream().map(p -> p.getId()).collect(Collectors.toList());
+    @Override
+    public User getUserById(int id) {
+        User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where id=?",
+                new Object[] { id },
+                (rs, i) -> this.createUserFromResultSet(rs, i));
 
-        requestedUser.setPermissions(permissionRepository.getPermissionsForRoles(ids));
+        this.initializeUserRolesAndPermissions(requestedUser);
 
         return requestedUser;
     }
@@ -69,6 +69,8 @@ public class JDBCUserRepository implements UserRepository {
             user.setFirstName((String) row.get("first_name"));
             user.setLastName((String) row.get("last_name"));
             user.setEmail((String) row.get("email"));
+
+            this.initializeUserRolesAndPermissions(user);
 
             users.add(user);
         }
@@ -95,5 +97,25 @@ public class JDBCUserRepository implements UserRepository {
     @Override
     public int getUsersCount() {
         return this.jdbcTemplate.queryForObject("select count(id) from account", Integer.class);
+    }
+
+    private User createUserFromResultSet(ResultSet rs, int i) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setFirstName(rs.getString("first_name"));
+        user.setLastName(rs.getString("last_name"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        return user;
+    }
+
+    private void initializeUserRolesAndPermissions(User user) {
+        List<Role> userRoles = this.roleRepository.getUserRoles(user.getId());
+
+        user.setRoles(userRoles);
+
+        List<Integer> ids = userRoles.stream().map(p -> p.getId()).collect(Collectors.toList());
+
+        user.setPermissions(permissionRepository.getPermissionsForRoles(ids));
     }
 }

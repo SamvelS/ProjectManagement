@@ -36,6 +36,11 @@ public class UserManagementController {
         return "manageUsers";
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        return ResponseEntity.ok(this.userManagementService.getUserById(id));
+    }
+
     @GetMapping("/data")
     public ResponseEntity<List<User>> getManageUsersData(@RequestParam(value = "from", defaultValue = "1") int from,
                                                         @RequestParam(value = "count", defaultValue = "10") int count) {

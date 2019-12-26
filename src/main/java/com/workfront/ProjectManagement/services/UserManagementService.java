@@ -11,5 +11,7 @@ public interface UserManagementService {
 
     int getUsersCount();
 
+    User getUserById(int id);
+
     void createUser(User user);
 }

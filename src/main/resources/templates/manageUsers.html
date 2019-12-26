@@ -43,6 +43,7 @@
                     <th field="firstName" width="150">First Name</th>
                     <th field="lastName" width="200">Last Name</th>
                     <th field="email" width="250">Email</th>
+                    <th field="roles" width="350">Roles</th>
     <!--                <th field="created-on" width="80" align="right">Created On</th>-->
     <!--                <th field="status" width="200">Status</th>-->
                 </tr>
@@ -60,40 +61,40 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create user</h5>
+                    <h5 class="modal-title">Create user</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form th:object="${user}">
+                    <form>
                         <div class="form-group">
                             <div class="form-label-group">
-                                <input type="text" id="firstName" class="form-control" placeholder="First Name">
+                                <input type="text" id="firstNameCreate" class="form-control" placeholder="First Name">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="form-label-group">
-                                <input type="text" id="lastName" class="form-control" placeholder="Last Name">
+                                <input type="text" id="lastNameCreate" class="form-control" placeholder="Last Name">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="form-label-group">
-                                <input type="text" id="email" class="form-control" placeholder="Email">
+                                <input type="text" id="emailCreate" class="form-control" placeholder="Email">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="form-label-group">
-                                <input type="password" id="password" class="form-control" placeholder="Password">
+                                <input type="password" id="passwordCreate" class="form-control" placeholder="Password">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
-                                    <label class="input-group-text" for="roles">Roles</label>
+                                    <label class="input-group-text" for="roles-create">Roles</label>
                                 </div>
-                                <select class="custom-select" multiple="true" id="roles">
+                                <select class="custom-select" multiple="true" id="roles-create">
 
                                 </select>
                             </div>
@@ -101,8 +102,59 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <span id="saving-user">Saving...</span>
-                    <a class="btn btn-primary" href="#" id="save-created-user">Save</a>
+                    <span id="saving-create-user">Saving...</span>
+                    <a class="btn btn-primary" href="#" id="save-created-user">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="edit-user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit user</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div>
+                                <input type="hidden" id="editingUserId">
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" id="firstNameEdit" class="form-control" placeholder="First Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="lastNameEdit" class="form-control" placeholder="Last Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="emailEdit" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="roles-edit">Roles</label>
+                                </div>
+                                <select class="custom-select" multiple="true" id="roles-edit">
+
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span id="loading-edit-user">Loading...</span>
+                    <span id="saving-edit-user">Saving...</span>
+                    <a class="btn btn-primary" href="#" id="save-edit-user">Save</a>
                 </div>
             </div>
         </div>

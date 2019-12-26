@@ -4,13 +4,14 @@ $(function() {
 
     $('#create-user').click(function () {
         clearCreateUserPopup();
-        $('#saving-user').hide();
+        $('#saving-create-user').hide();
+        $('#loading-edit-user').show();
         $('#create-user-modal').modal('show');
     });
 
     $('#save-created-user').click(async function (event) {
         event.preventDefault();
-        await saveUser();
+        await createUser();
     });
 
     $('#users-grid-area').on('change', '.select-user-check', function () {
@@ -34,6 +35,10 @@ $(function() {
         if ($(this).hasClass('disabled')) {
             return;
         }
+
+        $('#saving-edit-user').hide();
+        $('#edit-user-modal').modal('show');
+        loadEditingUserData($('.select-user-check:checked').val());
     });
 
     $('#delete-user').click(async function () {
@@ -44,15 +49,16 @@ $(function() {
 });
 
 function clearCreateUserPopup() {
-    $('#firstName').val('');
-    $('#lastName').val('');
-    $('#email').val('');
-    $('#password').val('');
+    $('#firstNameCreate').val('');
+    $('#lastNameCreate').val('');
+    $('#emailCreate').val('');
+    $('#passwordCreate').val('');
     $('span.validation-error').remove();
 }
 
 function initializeUsersDataGrid() {
     const usersDatagrid = $('#users-datagrid');
+    usersDatagrid.datagrid({singleSelect:true});
     usersDatagrid.datagrid({pageSize:20});
     usersDatagrid.datagrid({pageList:[20,30,40,50]});
     usersDatagrid.datagrid('getPager').pagination({
@@ -64,14 +70,16 @@ async function loadUsersData(from = 1, count = 20) {
     const totalUsersCount = await axios.get('/users/count');
     const usersDatagrid = $('#users-datagrid');
 
-    const users = (await axios.get('/users/data?from=' + from + '&count=' + count)).data.map(({id,firstName, lastName, email}) => ({
+    const users = (await axios.get('/users/data?from=' + from + '&count=' + count)).data.map(({id, firstName, lastName, email, roles}) => ({
         id:`
                 <div class="checkbox-for-grid">
                     <input type="checkbox" class="select-user-check" value="${id}">
                 </div>`,
             firstName,
             lastName,
-            email
+            email,
+            roles: `<div class="roles-presenter">${roles.reduce((accumulator, {name, id}) => accumulator + `${name}, `, '').trim().slice(0, -1)}
+</div>`
     }));
 
     usersDatagrid.datagrid({data: (users)});
@@ -81,26 +89,48 @@ async function loadUsersData(from = 1, count = 20) {
     });
 }
 
+async function loadEditingUserData(id) {
+    const user = (await axios.get('/users/' + id)).data;
+
+    $('#editingUserId').val(user.id);
+    $('#firstNameEdit').val(user.firstName);
+    $('#lastNameEdit').val(user.lastName);
+    $('#emailEdit').val(user.email);
+
+    const roles = (await axios.get('/users/roles')).data;
+    console.log(roles);
+    const optionsAsString = roles.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
+    $('#roles-edit').html(optionsAsString);
+
+    $('#roles-edit option').each(function() {
+        if(user.roles.some(role => role.id === parseInt($(this).val()))) {
+            $(this).attr('selected', 'selected');
+        }
+    });
+
+    $('#loading-edit-user').hide();
+}
+
 async function loadAndInitializeRoles() {
     const roles = (await axios.get('/users/roles')).data;
     const optionsAsString = roles.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
-    $('#roles').html(optionsAsString);
-    $('#roles').prop("selectedIndex", 0).val();
+    $('#roles-create').html(optionsAsString);
+    $('#roles-create').prop("selectedIndex", 0).val();
 }
 
-async function saveUser() {
-    $('#saving-user').show();
+async function createUser() {
+    $('#saving-create-user').show();
 
     var roles = [];
-    $.each($("#roles option:selected"), function(){
+    $.each($("#roles-create option:selected"), function(){
         roles.push({id:$(this).val()});
     });
 
     const data = {
-        firstName: $('#firstName').val(),
-        lastName: $('#lastName').val(),
-        email: $('#email').val(),
-        password: $('#password').val(),
+        firstName: $('#firstNameCreate').val(),
+        lastName: $('#lastNameCreate').val(),
+        email: $('#emailCreate').val(),
+        password: $('#passwordCreate').val(),
         roles:roles
     };
 
@@ -122,8 +152,8 @@ async function saveUser() {
                 $('span.validation-error').remove();
 
                 error.response.data.forEach((item, index) => {
-                    if($("#" + item.fst).length > 0) {
-                        $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst));
+                    if($("#" + item.fst + "Create").length > 0) {
+                        $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst + "Create"));
                     }
                 });
             }
@@ -133,5 +163,5 @@ async function saveUser() {
         }
     }
 
-    $('#saving-user').hide();
+    $('#saving-create-user').hide();
 }
