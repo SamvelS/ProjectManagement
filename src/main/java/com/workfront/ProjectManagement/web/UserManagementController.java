@@ -2,6 +2,7 @@ package com.workfront.ProjectManagement.web;
 
 import com.google.gson.Gson;
 import com.sun.tools.javac.util.Pair;
+import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
 import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.repositoriy.RoleRepository;
@@ -13,9 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class UserManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> processAddUser(@RequestBody @Valid User user, Errors errors) {
+    public ResponseEntity<String> processAddUser(@RequestBody @Validated(OrderedValidation.class) User user, Errors errors) {
         if(errors.hasErrors()) {
             Map<String, String> fieldErrorsMap = new HashMap<>();
             errors.getFieldErrors().stream().forEach(err -> {
@@ -90,11 +91,11 @@ public class UserManagementController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<String> processEditUser(@RequestBody @Valid User user, Errors errors) {
+    public ResponseEntity<String> processEditUser(@RequestBody @Validated(OrderedValidation.class) User user, Errors errors) {
         if(errors.hasErrors()) {
             Map<String, String> fieldErrorsMap = new HashMap<>();
             errors.getFieldErrors().stream().forEach(err -> {
-                if(!fieldErrorsMap.containsKey(err.getField()) && !err.getField().equals("password")) {
+                if(!fieldErrorsMap.containsKey(err.getField())) {
                     fieldErrorsMap.put(err.getField(), err.getDefaultMessage());
                 }
             });

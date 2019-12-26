@@ -191,6 +191,7 @@ async function editUser() {
         firstName: $('#firstNameEdit').val(),
         lastName: $('#lastNameEdit').val(),
         email: $('#emailEdit').val(),
+        password: 'ignore',
         roles:roles
     };
 
