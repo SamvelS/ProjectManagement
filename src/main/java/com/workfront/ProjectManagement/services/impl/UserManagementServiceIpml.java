@@ -33,4 +33,9 @@ public class UserManagementServiceIpml implements UserManagementService {
     public void createUser(User user) {
         this.userRepository.createUser(user);
     }
+
+    @Override
+    public void editUser(User user) {
+        this.userRepository.editUser(user);
+    }
 }

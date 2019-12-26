@@ -58,7 +58,7 @@ public class JDBCUserRepository implements UserRepository {
     @Override
     public List<User> getUsers(int from, int count) {
         List<Map<String, Object>> usersToMap  = this.jdbcTemplate.queryForList("select * from account" +
-                " order by first_name, last_name limit ? offset ?"
+                " order by id limit ? offset ?"
                 , new Object[] { count, from });
 
         List<User> users = new ArrayList<>();
@@ -81,11 +81,29 @@ public class JDBCUserRepository implements UserRepository {
     @Transactional
     public void createUser(User user) {
         this.jdbcTemplate.update("insert into account(email, password, first_name, last_name, created_on, status_id)" +
-                " values(?,?,?,?,now(),1)", new Object[]{user.getEmail(),
+                " values(?,?,?,?,now(),1)", new Object[] { user.getEmail(),
                 this.beans.passwordEncoder().encode(user.getPassword()),
                 user.getFirstName(), user.getLastName()});
 
         User createdUser = this.getUserByEmail(user.getEmail());
+
+        for (int roleId :
+                user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {
+            this.jdbcTemplate.update("insert into account_role(account_id, role_id)" +
+                    " values(?,?)", new Object[]{createdUser.getId(), roleId});
+        }
+    }
+
+    @Override
+    @Transactional
+    public void editUser(User user) {
+        this.jdbcTemplate.update("update account set email=?, first_name=?, last_name=?" +
+                " where id=?",
+                new Object[] { user.getEmail(), user.getFirstName(), user.getLastName(), user.getId() });
+
+        User createdUser = this.getUserById(user.getId());
+
+        this.jdbcTemplate.update("delete from account_role where account_id=?", new Object[] { user.getId() });
 
         for (int roleId :
                 user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {

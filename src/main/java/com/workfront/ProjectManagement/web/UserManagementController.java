@@ -88,4 +88,38 @@ public class UserManagementController {
 
         return ResponseEntity.ok("");
     }
+
+    @PostMapping("/edit")
+    public ResponseEntity<String> processEditUser(@RequestBody @Valid User user, Errors errors) {
+        if(errors.hasErrors()) {
+            Map<String, String> fieldErrorsMap = new HashMap<>();
+            errors.getFieldErrors().stream().forEach(err -> {
+                if(!fieldErrorsMap.containsKey(err.getField()) && !err.getField().equals("password")) {
+                    fieldErrorsMap.put(err.getField(), err.getDefaultMessage());
+                }
+            });
+
+            if(!fieldErrorsMap.isEmpty()) {
+                List<Pair<String, String>> fieldErrors = new ArrayList<>();
+                for (Map.Entry<String, String> err :
+                        fieldErrorsMap.entrySet()) {
+                    fieldErrors.add(new Pair<>(err.getKey(), err.getValue()));
+                }
+
+                return new ResponseEntity(new Gson().toJson(fieldErrors), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        try {
+            this.userManagementService.editUser(user);
+        }
+        catch (DuplicateKeyException ignore) {
+            List<Pair<String, String>> fieldErrors = new ArrayList<>();
+            fieldErrors.add(new Pair<>("email", "Email " + user.getEmail() + " already exists"));
+
+            return new ResponseEntity(new Gson().toJson(fieldErrors), HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok("");
+    }
 }

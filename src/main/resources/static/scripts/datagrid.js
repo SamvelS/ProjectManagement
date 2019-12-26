@@ -14,6 +14,11 @@ $(function() {
         await createUser();
     });
 
+    $('#save-edited-user').click(async function (event) {
+        event.preventDefault();
+        await editUser();
+    });
+
     $('#users-grid-area').on('change', '.select-user-check', function () {
         const selectedUsersCount = $('.select-user-check:checked').length;
 
@@ -53,6 +58,13 @@ function clearCreateUserPopup() {
     $('#lastNameCreate').val('');
     $('#emailCreate').val('');
     $('#passwordCreate').val('');
+    $('span.validation-error').remove();
+}
+
+function clearEditUserPopup() {
+    $('#firstNameEdit').val('');
+    $('#lastNameEdit').val('');
+    $('#emailEdit').val('');
     $('span.validation-error').remove();
 }
 
@@ -120,6 +132,7 @@ async function loadAndInitializeRoles() {
 
 async function createUser() {
     $('#saving-create-user').show();
+    $('span.validation-error').remove();
 
     var roles = [];
     $.each($("#roles-create option:selected"), function(){
@@ -149,8 +162,6 @@ async function createUser() {
         if(error.response) {
             if(error.response.status == 400) {
 
-                $('span.validation-error').remove();
-
                 error.response.data.forEach((item, index) => {
                     if($("#" + item.fst + "Create").length > 0) {
                         $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst + "Create"));
@@ -164,4 +175,51 @@ async function createUser() {
     }
 
     $('#saving-create-user').hide();
+}
+
+async function editUser() {
+    $('#saving-edit-user').show();
+    $('span.validation-error').remove();
+
+    var roles = [];
+    $.each($("#roles-edit option:selected"), function(){
+        roles.push({id:$(this).val()});
+    });
+
+    const data = {
+        id: $('#editingUserId').val(),
+        firstName: $('#firstNameEdit').val(),
+        lastName: $('#lastNameEdit').val(),
+        email: $('#emailEdit').val(),
+        roles:roles
+    };
+
+    try {
+        const response = await axios({
+            method: 'post',
+            url: '/users/edit',
+            data
+        });
+
+        $('#edit-user-modal').modal('hide');
+        clearEditUserPopup();
+        location.reload();
+    }
+    catch (error) {
+        if(error.response) {
+            if(error.response.status == 400) {
+
+                error.response.data.forEach((item, index) => {
+                    if($("#" + item.fst + "Edit").length > 0) {
+                        $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst + "Edit"));
+                    }
+                });
+            }
+        }
+        else {
+            console.log(error);
+        }
+    }
+
+    $('#saving-edit-user').hide();
 }

@@ -27,7 +27,7 @@ public class TestRunner implements CommandLineRunner {
             return user;
         });
 
-        allUsers.forEach(System.out::println);
+        //allUsers.forEach(System.out::println);
 
     }
 }

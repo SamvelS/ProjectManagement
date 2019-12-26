@@ -15,5 +15,7 @@ public interface UserRepository {
 
     void createUser(User user);
 
+    void editUser(User user);
+
     int getUsersCount();
 }
