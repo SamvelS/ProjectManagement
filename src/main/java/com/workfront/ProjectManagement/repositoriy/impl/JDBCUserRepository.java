@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -110,6 +111,16 @@ public class JDBCUserRepository implements UserRepository {
             this.jdbcTemplate.update("insert into account_role(account_id, role_id)" +
                     " values(?,?)", new Object[]{createdUser.getId(), roleId});
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserById(int id) {
+        this.jdbcTemplate.update("delete from account_role where account_id=?", new Object[]{ id });
+
+        this.jdbcTemplate.update("delete from account where id=?", new Object[]{ id });
+
+        // TODO : delete from task as well
     }
 
     @Override

@@ -123,4 +123,11 @@ public class UserManagementController {
 
         return ResponseEntity.ok("");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> processDeleteUser(@PathVariable int id) {
+        this.userManagementService.deleteUserById(id);
+
+        return ResponseEntity.ok("");
+    }
 }

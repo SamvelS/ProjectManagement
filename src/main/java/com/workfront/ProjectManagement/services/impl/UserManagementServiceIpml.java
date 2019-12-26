@@ -38,4 +38,9 @@ public class UserManagementServiceIpml implements UserManagementService {
     public void editUser(User user) {
         this.userRepository.editUser(user);
     }
+
+    @Override
+    public void deleteUserById(int id) {
+        this.userRepository.deleteUserById(id);
+    }
 }

@@ -17,5 +17,7 @@ public interface UserRepository {
 
     void editUser(User user);
 
+    void deleteUserById(int id);
+
     int getUsersCount();
 }

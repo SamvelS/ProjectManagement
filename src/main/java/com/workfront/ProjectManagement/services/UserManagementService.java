@@ -16,4 +16,6 @@ public interface UserManagementService {
     void createUser(User user);
 
     void editUser(User user);
+
+    void deleteUserById(int id);
 }

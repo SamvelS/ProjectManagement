@@ -50,6 +50,8 @@ $(function() {
         if($(this).hasClass('disabled')) {
             return;
         }
+
+        deleteSelectedUser();
     });
 });
 
@@ -223,4 +225,18 @@ async function editUser() {
     }
 
     $('#saving-edit-user').hide();
+}
+
+async function deleteSelectedUser() {
+    try {
+        const response = await axios({
+            method: 'delete',
+            url: '/users/' + $('.select-user-check:checked').val()
+        });
+
+        location.reload();
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
