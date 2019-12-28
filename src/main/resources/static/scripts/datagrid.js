@@ -1,5 +1,5 @@
 $(function() {
-    loadUsersData().then(() => initializeUsersDataGrid()).catch(err => console.log(err));
+    loadUsersData().then(() => initializeUsersDataGrid()).then(async () => await loadUsersCount()).catch(err => console.log(err));
     loadAndInitializeRoles();
 
     $('#create-user').click(function () {
@@ -73,15 +73,42 @@ function clearEditUserPopup() {
 function initializeUsersDataGrid() {
     const usersDatagrid = $('#users-datagrid');
     usersDatagrid.datagrid({singleSelect:true});
-    usersDatagrid.datagrid({pageSize:20});
     usersDatagrid.datagrid({pageList:[20,30,40,50]});
+    usersDatagrid.datagrid({pageSize:20});
     usersDatagrid.datagrid('getPager').pagination({
         layout:['list','sep','first','prev','sep','links','sep','next','last','info']
+    });
+
+    usersDatagrid.datagrid('getPager').pagination({
+        onSelectPage: (pageNumber, pageSize) => loadUsersDataForPage(pageNumber, pageSize)
+    });
+}
+
+async function loadUsersDataForPage(pageNumber, pageSize) {
+    console.log('pageNumber: ' + pageNumber + ' pageSize: ' + pageSize);
+    await loadUsersData((pageNumber - 1) * pageSize + 1, pageSize)
+        .then(async () => await loadUsersCount()).catch(err => console.log(err));
+
+    const pager = $('#users-datagrid').datagrid('getPager');
+    pager.pagination({
+        layout:['list','sep','first','prev','sep','links','sep','next','last','info']});
+    pager.pagination({
+        onSelectPage: (pageNumber, pageSize) => loadUsersDataForPage(pageNumber, pageSize)
+    });
+    pager.pagination({
+        pageNumber: pageNumber
+    });
+}
+
+async function loadUsersCount() {
+    const totalUsersCount = await axios.get('/users/count');
+
+    $('#users-datagrid').datagrid('getPager').pagination({
+        total: totalUsersCount.data
     });
 }
 
 async function loadUsersData(from = 1, count = 20) {
-    const totalUsersCount = await axios.get('/users/count');
     const usersDatagrid = $('#users-datagrid');
 
     const users = (await axios.get('/users/data?from=' + from + '&count=' + count)).data.map(({id, firstName, lastName, email, roles}) => ({
@@ -97,10 +124,6 @@ async function loadUsersData(from = 1, count = 20) {
     }));
 
     usersDatagrid.datagrid({data: (users)});
-
-    usersDatagrid.datagrid('getPager').pagination({
-        total: totalUsersCount
-    });
 }
 
 async function loadEditingUserData(id) {
