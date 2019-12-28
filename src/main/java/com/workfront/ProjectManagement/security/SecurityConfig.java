@@ -1,4 +1,5 @@
 package com.workfront.ProjectManagement.security;
+import com.workfront.ProjectManagement.services.impl.UserDetailsServiceImpl;
 import com.workfront.ProjectManagement.utilities.Beans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,14 +9,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
-import javax.sql.DataSource;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private DataSource dataSource;
 
     @Autowired
     private Beans beans;
@@ -26,8 +24,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
                 .authorizeRequests()
-//                .antMatchers("/users/**")
-//                    .hasAnyAuthority("manage_users")
+                .antMatchers("/users/**")
+                    .hasAnyAuthority("manage_users")
                 .antMatchers("/")
                     .access("permitAll")
 
@@ -46,9 +44,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @Override
+    protected UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(this.beans.userDetailsService());
+        authProvider.setUserDetailsService(this.userDetailsService());
         authProvider.setPasswordEncoder(this.beans.passwordEncoder());
         return authProvider;
     }

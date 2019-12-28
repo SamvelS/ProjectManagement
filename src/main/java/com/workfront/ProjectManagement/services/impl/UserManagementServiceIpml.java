@@ -6,7 +6,6 @@ import com.workfront.ProjectManagement.services.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.websocket.OnClose;
 import java.util.List;
 
 @Service

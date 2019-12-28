@@ -4,12 +4,14 @@ import com.workfront.ProjectManagement.domain.ProjectUserDetails;
 import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@Configurable
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
