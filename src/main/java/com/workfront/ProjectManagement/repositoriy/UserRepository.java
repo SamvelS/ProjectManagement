@@ -19,5 +19,7 @@ public interface UserRepository {
 
     void deleteUserById(int id);
 
+    void updatePassword(int userId, String newPassword);
+
     int getUsersCount();
 }

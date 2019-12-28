@@ -40,12 +40,20 @@ public class ProjectUserDetails implements UserDetails {
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
+    public boolean isCredentialsNonExpired()  {
         return true;
+    }
+
+    public boolean forceToChangePassword() {
+        return this.user.getStatusId() == UserStatus.CHANGE_PASSWORD.getValue();
+    }
+
+    public int getUserId() {
+        return this.user.getId();
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // TODO : change to normal logic
+        return true;
     }
 }

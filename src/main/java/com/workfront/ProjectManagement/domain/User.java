@@ -30,6 +30,8 @@ public class User {
     @Size(min = 6, max = 50, message = "Password length should be between 6 and 50", groups = SecondOrder.class)
     private String password;
 
+    private int statusId;
+
     private List<Role> roles;
     private List<Permission> permissions;
 
@@ -88,4 +90,8 @@ public class User {
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
     }
+
+    public int getStatusId() { return this.statusId; }
+
+    public void setStatusId(int statusId) { this.statusId = statusId; }
 }

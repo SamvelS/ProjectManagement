@@ -42,4 +42,7 @@ public class UserManagementServiceIpml implements UserManagementService {
     public void deleteUserById(int id) {
         this.userRepository.deleteUserById(id);
     }
+
+    @Override
+    public void updatePassword(int userId, String newPassword) { this.userRepository.updatePassword(userId, newPassword); }
 }

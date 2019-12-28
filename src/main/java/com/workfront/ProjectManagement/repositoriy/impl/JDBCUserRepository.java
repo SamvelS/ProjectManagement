@@ -2,6 +2,7 @@ package com.workfront.ProjectManagement.repositoriy.impl;
 
 import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
+import com.workfront.ProjectManagement.domain.UserStatus;
 import com.workfront.ProjectManagement.repositoriy.PermissionRepository;
 import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
@@ -127,6 +128,13 @@ public class JDBCUserRepository implements UserRepository {
         return this.jdbcTemplate.queryForObject("select count(id) from account", Integer.class);
     }
 
+    @Override
+    public void updatePassword(int userId, String newPassword) {
+        this.jdbcTemplate.update("update account set password=?, status_id=?" +
+                        " where id=?",
+                new Object[] { this.beans.passwordEncoder().encode(newPassword), UserStatus.ACTIVE_USER.getValue(), userId });
+    }
+
     private User createUserFromResultSet(ResultSet rs, int i) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
@@ -134,6 +142,7 @@ public class JDBCUserRepository implements UserRepository {
         user.setLastName(rs.getString("last_name"));
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
+        user.setStatusId(rs.getInt("status_id"));
         return user;
     }
 
