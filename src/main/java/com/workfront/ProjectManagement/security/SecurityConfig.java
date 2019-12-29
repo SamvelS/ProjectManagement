@@ -1,4 +1,5 @@
 package com.workfront.ProjectManagement.security;
+
 import com.workfront.ProjectManagement.services.impl.UserDetailsServiceImpl;
 import com.workfront.ProjectManagement.utilities.Beans;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/users/changePassword")
                     .access("permitAll")
-                .antMatchers("/users/**")
-                    .hasAnyAuthority("manage_users")
-                .antMatchers("/projects/**")
-                    .hasAnyAuthority("manage_projects")
+//                .antMatchers("/users/**")
+//                    .hasAnyAuthority("manage_users")
+//                .antMatchers("/projects/**")
+//                    .hasAnyAuthority("manage_projects")
                 .antMatchers("/")
                     .access("permitAll")
 
