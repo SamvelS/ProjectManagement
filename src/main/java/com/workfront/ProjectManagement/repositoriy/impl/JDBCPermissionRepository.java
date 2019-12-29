@@ -30,8 +30,8 @@ public class JDBCPermissionRepository implements PermissionRepository {
                 new NamedParameterJdbcTemplate(this.jdbcTemplate.getDataSource());
 
         List<Permission> userPermissions = namedJdbcTemplate.query("select * from permission p" +
-                        " left join role_permission rp on p.id=rp.role_id" +
-                        " where p.id in (:ids)", parameters,
+                        " left join role_permission rp on p.id=rp.permission_id" +
+                        " where rp.role_id in (:ids)", parameters,
                 (rs, i) -> {
                     Permission permission = new Permission();
                     permission.setId(rs.getInt("id"));

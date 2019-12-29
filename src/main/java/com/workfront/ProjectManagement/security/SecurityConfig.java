@@ -24,8 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
 
                 .authorizeRequests()
+                .antMatchers("/users/changePassword")
+                    .access("permitAll")
                 .antMatchers("/users/**")
                     .hasAnyAuthority("manage_users")
+                .antMatchers("/projects/**")
+                    .hasAnyAuthority("manage_projects")
                 .antMatchers("/")
                     .access("permitAll")
 
