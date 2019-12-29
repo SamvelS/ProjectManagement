@@ -37,6 +37,11 @@ public class ProjectManagementController {
         return ResponseEntity.ok(this.projectManagementService.getProjects(from - 1, count));
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getProjectsCount() {
+        return ResponseEntity.ok(this.projectManagementService.getProjectsCount());
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> processAddUser(@RequestBody @Validated(OrderedValidation.class) Project project, Errors errors) {
         if(errors.hasErrors()) {

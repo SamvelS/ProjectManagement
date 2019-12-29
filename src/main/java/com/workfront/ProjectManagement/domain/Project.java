@@ -2,6 +2,7 @@ package com.workfront.ProjectManagement.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.workfront.ProjectManagement.constraint.DateRangeMatch;
+import com.workfront.ProjectManagement.constraint.NullableDateRangeMatch;
 import com.workfront.ProjectManagement.validationOrder.FirstOrder;
 import com.workfront.ProjectManagement.validationOrder.SecondOrder;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
+@NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Project {
     private int id;
 
@@ -29,6 +31,14 @@ public class Project {
     @NotNull(message = "End Date is required", groups = FirstOrder.class)
     @JsonFormat(pattern = "mm/dd/yyyy")
     private Date plannedEndDate;
+
+    @JsonFormat(pattern = "mm/dd/yyyy")
+    private Date actualStartDate;
+
+    @JsonFormat(pattern = "mm/dd/yyyy")
+    private Date actualEndDate;
+
+    private String status;
 
     public int getId() {
         return id;
@@ -50,6 +60,18 @@ public class Project {
         return plannedEndDate;
     }
 
+    public Date getActualStartDate() {
+        return actualStartDate;
+    }
+
+    public Date getActualEndDate() {
+        return actualEndDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -68,5 +90,17 @@ public class Project {
 
     public void setPlannedEndDate(Date plannedEndDate) {
         this.plannedEndDate = plannedEndDate;
+    }
+
+    public void setActualStartDate(Date actualStartDate) {
+        this.actualStartDate = actualStartDate;
+    }
+
+    public void setActualEndDate(Date anctualEndDate) {
+        this.actualEndDate = anctualEndDate;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

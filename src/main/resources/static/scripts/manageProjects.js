@@ -1,5 +1,5 @@
 $(function() {
-    loadProjectsData();//.then(() => initializeUsersDataGrid()).then(async () => await loadUsersCount()).catch(err => console.log(err));
+    loadProjectsData().then(() => initializeProjectsDataGrid()).then(async () => await loadProjectsCount()).catch(err => console.log(err));
 
     $('#plannedStartDateCreate').datepicker();
     $('#plannedEndDateCreate').datepicker();
@@ -68,16 +68,56 @@ async function createProject() {
 async function loadProjectsData(from = 1, count = 20) {
     const projectsDatagrid = $('#projects-datagrid');
 
-    const projects = (await axios.get('/projects/data?from=' + from + '&count=' + count))
-
-    // const projects = (await axios.get('/projects/data?from=' + from + '&count=' + count)).data.map(({ id, name, description }) => ({
-    //     id:`
-    //             <div class="checkbox-for-grid">
-    //                 <input type="checkbox" class="select-project-check" value="${id}">
-    //             </div>`,
-    //     name,
-    //     description
-    // }));
+    const projects = (await axios.get('/projects/data?from=' + from + '&count=' + count)).data.map(({ id, name, description, plannedStartDate, plannedEndDate, actualStartDate, actualEndDate, status }) => ({
+        id:`
+                <div class="checkbox-for-grid">
+                    <input type="checkbox" class="select-project-check" value="${id}">
+                </div>`,
+        name,
+        description,
+        plannedStartDate,
+        plannedEndDate,
+        actualStartDate,
+        actualEndDate,
+        status
+    }));
 
     projectsDatagrid.datagrid({ data: (projects) });
+}
+
+function initializeProjectsDataGrid() {
+    const projectsDataGrid = $('#projects-datagrid');
+    projectsDataGrid.datagrid({singleSelect:true});
+    projectsDataGrid.datagrid({pageList:[20,30,40,50]});
+    projectsDataGrid.datagrid({pageSize:20});
+    projectsDataGrid.datagrid('getPager').pagination({
+        layout:['list','sep','first','prev','sep','links','sep','next','last','info']
+    });
+
+    projectsDataGrid.datagrid('getPager').pagination({
+        onSelectPage: (pageNumber, pageSize) => loadProjectsDataForPage(pageNumber, pageSize)
+    });
+}
+
+async function loadProjectsDataForPage(pageNumber, pageSize) {
+    await loadProjectsData((pageNumber - 1) * pageSize + 1, pageSize)
+        .then(async () => await loadProjectsCount()).catch(err => console.log(err));
+
+    const pager = $('#projects-datagrid').datagrid('getPager');
+    pager.pagination({
+        layout:['list','sep','first','prev','sep','links','sep','next','last','info']});
+    pager.pagination({
+        onSelectPage: (pageNumber, pageSize) => loadProjectsDataForPage(pageNumber, pageSize)
+    });
+    pager.pagination({
+        pageNumber: pageNumber
+    });
+}
+
+async function loadProjectsCount() {
+    const totalProjectsCount = await axios.get('/projects/count');
+
+    $('#projects-datagrid').datagrid('getPager').pagination({
+        total: totalProjectsCount.data
+    });
 }

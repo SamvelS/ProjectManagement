@@ -22,4 +22,9 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     public void createProject(Project project) {
         this.projectRepository.createProject(project);
     }
+
+    @Override
+    public int getProjectsCount() {
+        return this.projectRepository.getProjectsCount();
+    }
 }

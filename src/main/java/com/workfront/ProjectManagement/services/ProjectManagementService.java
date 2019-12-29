@@ -10,4 +10,6 @@ public interface ProjectManagementService {
     List<Project> getProjects(int from, int count);
 
     void createProject(Project project);
+
+    int getProjectsCount();
 }

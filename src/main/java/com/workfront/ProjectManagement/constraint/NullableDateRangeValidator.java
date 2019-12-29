@@ -7,14 +7,13 @@ import javax.validation.ConstraintValidatorContext;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateRangeValidator implements ConstraintValidator<DateRangeMatch, Object> {
-
+public class NullableDateRangeValidator implements ConstraintValidator<NullableDateRangeMatch, Object> {
     private String startDateFieldName;
     private String endDateFieldName;
     private String message;
 
     @Override
-    public void initialize(DateRangeMatch constraintAnnotation) {
+    public void initialize(NullableDateRangeMatch constraintAnnotation) {
         startDateFieldName = constraintAnnotation.startDate();
         endDateFieldName = constraintAnnotation.endDate();
         message = constraintAnnotation.message();
@@ -27,10 +26,17 @@ public class DateRangeValidator implements ConstraintValidator<DateRangeMatch, O
         {
             final Object firstObj = BeanUtils.getProperty(value, startDateFieldName);
             final Object secondObj = BeanUtils.getProperty(value, endDateFieldName);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-            Date firstDate = simpleDateFormat.parse(firstObj.toString());
-            Date secondDate = simpleDateFormat.parse(secondObj.toString());
-            valid = firstDate.compareTo(secondDate) <= 0;
+
+            if(firstObj == null && secondObj == null) {
+                valid = true;
+            } else if(firstObj == null || secondObj == null) {
+                valid = false;
+            } else {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+                Date firstDate = simpleDateFormat.parse(firstObj.toString());
+                Date secondDate = simpleDateFormat.parse(secondObj.toString());
+                valid = firstDate.compareTo(secondDate) <= 0;
+            }
         }
         catch (final Exception ignore)
         {

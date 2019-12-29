@@ -85,7 +85,6 @@ function initializeUsersDataGrid() {
 }
 
 async function loadUsersDataForPage(pageNumber, pageSize) {
-    console.log('pageNumber: ' + pageNumber + ' pageSize: ' + pageSize);
     await loadUsersData((pageNumber - 1) * pageSize + 1, pageSize)
         .then(async () => await loadUsersCount()).catch(err => console.log(err));
 
@@ -135,7 +134,7 @@ async function loadEditingUserData(id) {
     $('#emailEdit').val(user.email);
 
     const roles = (await axios.get('/users/roles')).data;
-    console.log(roles);
+
     const optionsAsString = roles.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
     $('#roles-edit').html(optionsAsString);
 
