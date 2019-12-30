@@ -9,7 +9,11 @@ import java.util.List;
 public interface ProjectManagementService {
     List<Project> getProjects(int from, int count);
 
+    Project getProjectById(int id);
+
     void createProject(Project project);
+
+    void editProject(Project project);
 
     int getProjectsCount();
 }

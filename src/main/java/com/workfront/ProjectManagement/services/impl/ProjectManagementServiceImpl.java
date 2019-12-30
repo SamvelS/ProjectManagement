@@ -19,8 +19,18 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     }
 
     @Override
+    public Project getProjectById(int id) {
+        return this.projectRepository.getProjectById(id);
+    }
+
+    @Override
     public void createProject(Project project) {
         this.projectRepository.createProject(project);
+    }
+
+    @Override
+    public void editProject(Project project) {
+        this.projectRepository.editProject(project);
     }
 
     @Override

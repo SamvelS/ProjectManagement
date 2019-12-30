@@ -106,6 +106,71 @@
         </div>
     </div>
 
+    <div class="modal fade" id="edit-project-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit project</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div>
+                                <input type="hidden" id="editingProjectId">
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" id="nameEdit" class="form-control" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="descriptionEdit" class="form-control" placeholder="Description">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedStartDateEdit" class="form-control" placeholder="Planned Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedEndDateEdit" class="form-control" placeholder="Planned End Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="actualStartDateEdit" class="form-control" placeholder="Actual Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="actualEndDateEdit" class="form-control" placeholder="Actual End Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="statuses-edit">Status</label>
+                                </div>
+                                <select class="custom-select" id="statuses-edit">
+
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span id="loading-edit-project">Loading...</span>
+                    <span id="saving-edit-project">Saving...</span>
+                    <a class="btn btn-primary" href="#" id="save-edited-project">Save</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>

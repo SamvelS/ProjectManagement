@@ -5,6 +5,10 @@ $(function() {
 
     $('#plannedStartDateCreate').datepicker();
     $('#plannedEndDateCreate').datepicker();
+    $('#plannedStartDateEdit').datepicker();
+    $('#plannedEndDateEdit').datepicker();
+    $('#actualStartDateEdit').datepicker();
+    $('#actualEndDateEdit').datepicker();
 
     $('#create-project').click(function () {
         clearCreateProjectPopup();
@@ -12,9 +16,24 @@ $(function() {
         $('#create-project-modal').modal('show');
     });
 
+    $('#edit-project').click(async function () {
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+
+        $('#saving-edit-project').hide();
+        $('#edit-project-modal').modal('show');
+        loadEditingProjectData($('.select-project-check:checked').val());
+    });
+
     $('#save-created-project').click(async function (event) {
         event.preventDefault();
         await createProject();
+    });
+
+    $('#save-edited-project').click(async function (event) {
+        event.preventDefault();
+        await editProject();
     });
 
     $('#projects-grid-area').on('change', '.select-project-check', function () {
@@ -35,11 +54,48 @@ $(function() {
     });
 });
 
+async function loadEditingProjectData(id) {
+    const project = (await axios.get('/projects/' + id)).data;
+
+    $('#editingProjectId').val(project.id);
+    $('#nameEdit').val(project.name);
+    $('#descriptionEdit').val(project.description);
+    $('#plannedStartDateEdit').val(project.plannedStartDate);
+    $('#plannedEndDateEdit').val(project.plannedEndDate);
+    $('#actualStartDateEdit').val(project.actualStartDate);
+    $('#actualEndDateEdit').val(project.actualEndDate);
+
+    const statuses = (await axios.get('/projects/statuses')).data;
+
+    const optionsAsString = statuses.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
+    $('#statuses-edit').html(optionsAsString);
+
+    $('#statuses-edit option').each(function() {
+        console.log($(this).text() + ":" + project.status);
+        if($(this).text() === project.status) {
+            $(this).attr('selected', 'selected');
+        }
+    });
+
+    $('#loading-edit-project').hide();
+}
+
 function clearCreateProjectPopup() {
     $('#nameCreate').val('');
     $('#descriptionCreate').val('');
     $('#plannedStartDateCreate').val('');
     $('#plannedEndDateCreate').val('');
+    $('span.validation-error').remove();
+}
+
+function clearEditProjectPopup() {
+    $('#editingProjectId').val('');
+    $('#nameEdit').val('');
+    $('#descriptionEdit').val('');
+    $('#plannedStartDateEdit').val('');
+    $('#plannedEndDateEdit').val('');
+    $('#actualStartDateEdit').val('');
+    $('#actualEndDateEdit').val('');
     $('span.validation-error').remove();
 }
 
@@ -82,6 +138,51 @@ async function createProject() {
     }
 
     $('#saving-create-project').hide();
+}
+
+async function editProject() {
+    $('#saving-edit-project').show();
+    $('span.validation-error').remove();
+
+    const data = {
+        id: $('#editingProjectId').val(),
+        name: $('#nameEdit').val(),
+        description: $('#descriptionEdit').val(),
+        plannedStartDate: $('#plannedStartDateEdit').val(),
+        plannedEndDate: $('#plannedEndDateEdit').val(),
+        actualStartDate: $('#actualStartDateEdit').val(),
+        actualEndDate: $('#actualEndDateEdit').val(),
+        status: $('#statuses-edit option:selected').text()
+    };
+
+    try {
+        const response = await axios({
+            method: 'post',
+            url: '/projects/edit',
+            data
+        });
+
+        $('#edit-project-modal').modal('hide');
+        clearEditProjectPopup();
+        location.reload();
+    }
+    catch (error) {
+        if(error.response) {
+            if(error.response.status == 400) {
+
+                error.response.data.forEach((item, index) => {
+                    if($("#" + item.fst + "Edit").length > 0) {
+                        $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst + "Edit"));
+                    }
+                });
+            }
+        }
+        else {
+            console.log(error);
+        }
+    }
+
+    $('#saving-edit-project').hide();
 }
 
 async function loadProjectsData(from = 1, count = 20) {
