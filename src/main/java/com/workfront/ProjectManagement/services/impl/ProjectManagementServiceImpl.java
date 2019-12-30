@@ -37,4 +37,9 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     public int getProjectsCount() {
         return this.projectRepository.getProjectsCount();
     }
+
+    @Override
+    public void deleteProjectById(int id) {
+        this.projectRepository.deleteProjectById(id);
+    }
 }

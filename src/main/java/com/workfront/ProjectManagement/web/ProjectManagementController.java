@@ -121,4 +121,11 @@ public class ProjectManagementController {
 
         return ResponseEntity.ok("");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> processDeleteProject(@PathVariable int id) {
+        this.projectManagementService.deleteProjectById(id);
+
+        return ResponseEntity.ok("");
+    }
 }

@@ -67,6 +67,13 @@ public class JDBCProjectRepository implements ProjectRepository {
                 project.getActualEndDate(), project.getStatus(), project.getId() });
     }
 
+    @Override
+    public void deleteProjectById(int id) {
+        this.jdbcTemplate.update("delete from project where id=?", new Object[]{ id });
+
+        // TODO : delete from task as well
+    }
+
     private List<Project> mapProjects(List<Map<String, Object>> rows) {
         List<Project> projects = new ArrayList<>();
 

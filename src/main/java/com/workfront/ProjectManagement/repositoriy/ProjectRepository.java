@@ -15,5 +15,7 @@ public interface ProjectRepository {
 
     void editProject(Project project);
 
+    void deleteProjectById(int id);
+
     int getProjectsCount();
 }

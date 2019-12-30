@@ -26,14 +26,9 @@ $(function() {
 
         if (selectedUsersCount == 1) {
             $('#edit-user').removeClass('disabled');
+            $('#delete-user').removeClass('disabled');
         } else {
             $('#edit-user').addClass('disabled');
-        }
-
-        if(selectedUsersCount) {
-            $('#delete-user').removeClass('disabled');
-        }
-        else {
             $('#delete-user').addClass('disabled');
         }
     });

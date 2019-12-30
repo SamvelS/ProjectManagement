@@ -15,5 +15,7 @@ public interface ProjectManagementService {
 
     void editProject(Project project);
 
+    void deleteProjectById(int id);
+
     int getProjectsCount();
 }

@@ -36,19 +36,22 @@ $(function() {
         await editProject();
     });
 
+    $('#delete-project').click(async function () {
+        if($(this).hasClass('disabled')) {
+            return;
+        }
+
+        deleteSelectedProject();
+    });
+
     $('#projects-grid-area').on('change', '.select-project-check', function () {
         const selectedProjectsCount = $('.select-project-check:checked').length;
 
         if (selectedProjectsCount == 1) {
             $('#edit-project').removeClass('disabled');
+            $('#delete-project').removeClass('disabled');
         } else {
             $('#edit-project').addClass('disabled');
-        }
-
-        if(selectedProjectsCount) {
-            $('#delete-project').removeClass('disabled');
-        }
-        else {
             $('#delete-project').addClass('disabled');
         }
     });
@@ -250,4 +253,18 @@ async function loadProjectsCount() {
     $('#projects-datagrid').datagrid('getPager').pagination({
         total: totalProjectsCount.data
     });
+}
+
+async function deleteSelectedProject() {
+    try {
+        const response = await axios({
+            method: 'delete',
+            url: '/projects/' + $('.select-project-check:checked').val()
+        });
+
+        location.reload();
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
