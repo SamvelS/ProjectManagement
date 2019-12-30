@@ -1,3 +1,5 @@
+var selectedPageSize = 20;
+
 $(function() {
     loadProjectsData().then(() => initializeProjectsDataGrid()).then(async () => await loadProjectsCount()).catch(err => console.log(err));
 
@@ -13,6 +15,23 @@ $(function() {
     $('#save-created-project').click(async function (event) {
         event.preventDefault();
         await createProject();
+    });
+
+    $('#projects-grid-area').on('change', '.select-project-check', function () {
+        const selectedProjectsCount = $('.select-project-check:checked').length;
+
+        if (selectedProjectsCount == 1) {
+            $('#edit-project').removeClass('disabled');
+        } else {
+            $('#edit-project').addClass('disabled');
+        }
+
+        if(selectedProjectsCount) {
+            $('#delete-project').removeClass('disabled');
+        }
+        else {
+            $('#delete-project').addClass('disabled');
+        }
     });
 });
 
@@ -89,13 +108,17 @@ function initializeProjectsDataGrid() {
     const projectsDataGrid = $('#projects-datagrid');
     projectsDataGrid.datagrid({singleSelect:true});
     projectsDataGrid.datagrid({pageList:[20,30,40,50]});
-    projectsDataGrid.datagrid({pageSize:20});
+    projectsDataGrid.datagrid({pageSize:selectedPageSize});
     projectsDataGrid.datagrid('getPager').pagination({
         layout:['list','sep','first','prev','sep','links','sep','next','last','info']
     });
 
     projectsDataGrid.datagrid('getPager').pagination({
         onSelectPage: (pageNumber, pageSize) => loadProjectsDataForPage(pageNumber, pageSize)
+    });
+
+    projectsDataGrid.datagrid('getPager').pagination({
+        onChangePageSize: (pageSize) => { selectedPageSize = pageSize }
     });
 }
 
@@ -110,7 +133,13 @@ async function loadProjectsDataForPage(pageNumber, pageSize) {
         onSelectPage: (pageNumber, pageSize) => loadProjectsDataForPage(pageNumber, pageSize)
     });
     pager.pagination({
+        onChangePageSize: (pageSize) => { selectedPageSize = pageSize }
+    });
+    pager.pagination({
         pageNumber: pageNumber
+    });
+    pager.pagination({
+        pageSize: selectedPageSize
     });
 }
 

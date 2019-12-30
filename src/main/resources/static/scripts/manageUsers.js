@@ -1,3 +1,5 @@
+var selectedPageSize = 20;
+
 $(function() {
     loadUsersData().then(() => initializeUsersDataGrid()).then(async () => await loadUsersCount()).catch(err => console.log(err));
     loadAndInitializeRoles();
@@ -74,13 +76,17 @@ function initializeUsersDataGrid() {
     const usersDatagrid = $('#users-datagrid');
     usersDatagrid.datagrid({singleSelect:true});
     usersDatagrid.datagrid({pageList:[20,30,40,50]});
-    usersDatagrid.datagrid({pageSize:20});
+    usersDatagrid.datagrid({pageSize:selectedPageSize});
     usersDatagrid.datagrid('getPager').pagination({
         layout:['list','sep','first','prev','sep','links','sep','next','last','info']
     });
 
     usersDatagrid.datagrid('getPager').pagination({
         onSelectPage: (pageNumber, pageSize) => loadUsersDataForPage(pageNumber, pageSize)
+    });
+
+    usersDatagrid.datagrid('getPager').pagination({
+        onChangePageSize: (pageSize) => { selectedPageSize = pageSize }
     });
 }
 
@@ -95,7 +101,14 @@ async function loadUsersDataForPage(pageNumber, pageSize) {
         onSelectPage: (pageNumber, pageSize) => loadUsersDataForPage(pageNumber, pageSize)
     });
     pager.pagination({
+        onChangePageSize: (pageSize) => { selectedPageSize = pageSize }
+    });
+    pager.pagination({
         pageNumber: pageNumber
+    });
+
+    pager.pagination({
+        pageSize: selectedPageSize
     });
 }
 
