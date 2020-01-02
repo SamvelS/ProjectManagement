@@ -63,3 +63,14 @@ span.validation-error {
 .checkbox-for-grid {
     height: 12px;
 }
+
+#project-statuses {
+    min-width: 200px;
+    max-width: 200px;
+    margin-right: 20px;
+}
+
+#projects {
+    min-width: 400px;
+    max-width: 400px;
+}

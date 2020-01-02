@@ -1,6 +1,8 @@
 package com.workfront.ProjectManagement.services.impl;
 
+import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.Project;
+import com.workfront.ProjectManagement.repositoriy.ActionStatusRepository;
 import com.workfront.ProjectManagement.repositoriy.ProjectRepository;
 import com.workfront.ProjectManagement.services.ProjectManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,17 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private ActionStatusRepository actionStatusRepository;
+
     @Override
     public List<Project> getProjects(int from, int count) {
         return this.projectRepository.getProjects(from, count);
+    }
+
+    @Override
+    public List<Project> getProjectsByActionStatus(int actionStatusId) {
+        return this.projectRepository.getProjectsByStatusId(actionStatusId);
     }
 
     @Override
@@ -41,5 +51,10 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     @Override
     public void deleteProjectById(int id) {
         this.projectRepository.deleteProjectById(id);
+    }
+
+    @Override
+    public List<ActionStatus> getActionStatuses() {
+        return this.actionStatusRepository.getActionStatuses();
     }
 }

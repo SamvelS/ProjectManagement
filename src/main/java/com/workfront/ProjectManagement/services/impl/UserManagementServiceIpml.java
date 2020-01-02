@@ -1,6 +1,8 @@
 package com.workfront.ProjectManagement.services.impl;
 
+import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
+import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.services.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ import java.util.List;
 public class UserManagementServiceIpml implements UserManagementService {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Override
     public List<User> getUsers(int from, int count) {
@@ -45,4 +50,9 @@ public class UserManagementServiceIpml implements UserManagementService {
 
     @Override
     public void updatePassword(int userId, String newPassword) { this.userRepository.updatePassword(userId, newPassword); }
+
+    @Override
+    public List<Role> getRoles() {
+        return this.roleRepository.getRoles();
+    }
 }

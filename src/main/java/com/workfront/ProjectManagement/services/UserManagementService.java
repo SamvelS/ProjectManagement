@@ -1,5 +1,6 @@
 package com.workfront.ProjectManagement.services;
 
+import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
 import org.springframework.stereotype.Service;
 
@@ -20,4 +21,6 @@ public interface UserManagementService {
     void deleteUserById(int id);
 
     void updatePassword(int userId, String newPassword);
+
+    List<Role> getRoles();
 }

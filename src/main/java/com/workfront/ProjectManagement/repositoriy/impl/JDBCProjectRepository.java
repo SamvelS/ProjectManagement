@@ -28,6 +28,17 @@ public class JDBCProjectRepository implements ProjectRepository {
     }
 
     @Override
+    public List<Project> getProjectsByStatusId(int statusId) {
+        List<Map<String, Object>> rows  = this.jdbcTemplate.queryForList("select prj.id, prj.name, prj.description, prj.planned_start_date,"
+                + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"
+                    + " left join action_status acts on acts.id = prj.status_id"
+                    + " where prj.status_id=? order by id",
+                new Object[]{ statusId });
+
+        return this.mapProjects(rows);
+    }
+
+    @Override
     public Project getProjectById(int id) {
         return this.jdbcTemplate.queryForObject("select prj.id, prj.name, prj.description, prj.planned_start_date,"
                         + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"

@@ -11,6 +11,8 @@ public interface ProjectRepository {
 
     Project getProjectById(int id);
 
+    List<Project> getProjectsByStatusId(int statusId);
+
     void createProject(Project project);
 
     void editProject(Project project);

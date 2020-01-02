@@ -74,7 +74,6 @@ async function loadEditingProjectData(id) {
     $('#statuses-edit').html(optionsAsString);
 
     $('#statuses-edit option').each(function() {
-        console.log($(this).text() + ":" + project.status);
         if($(this).text() === project.status) {
             $(this).attr('selected', 'selected');
         }

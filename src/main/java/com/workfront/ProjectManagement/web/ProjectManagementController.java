@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.sun.tools.javac.util.Pair;
 import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.Project;
-import com.workfront.ProjectManagement.repositoriy.ActionStatusRepository;
 import com.workfront.ProjectManagement.services.ProjectManagementService;
 import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +26,6 @@ public class ProjectManagementController {
 
     @Autowired
     ProjectManagementService projectManagementService;
-
-    @Autowired
-    ActionStatusRepository actionStatusRepository;
 
     @GetMapping
     public String getManageProjectsView() {
@@ -49,7 +44,14 @@ public class ProjectManagementController {
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<List<ActionStatus>> getActionStatuses() { return ResponseEntity.ok(this.actionStatusRepository.getActionStatuses()); }
+    public ResponseEntity<List<ActionStatus>> getActionStatuses() {
+        return ResponseEntity.ok(this.projectManagementService.getActionStatuses());
+    }
+
+    @GetMapping("/byStatus/{statusId}")
+    public ResponseEntity<List<Project>> getProjectsByStatusId(@PathVariable int statusId) {
+        return ResponseEntity.ok(this.projectManagementService.getProjectsByActionStatus(statusId));
+    }
 
     @GetMapping("/count")
     public ResponseEntity<Integer> getProjectsCount() {

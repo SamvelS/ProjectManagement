@@ -8,7 +8,6 @@ import com.workfront.ProjectManagement.utilities.Beans;
 import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
 import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
-import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.services.UserManagementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ public class UserManagementController {
 
     @Autowired
     private UserManagementService userManagementService;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private Beans beans;
@@ -65,7 +61,7 @@ public class UserManagementController {
 
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
-        return ResponseEntity.ok(this.roleRepository.getRoles());
+        return ResponseEntity.ok(this.userManagementService.getRoles());
     }
 
     @PostMapping("/add")
