@@ -31,6 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .hasAnyAuthority("manage_users")
                 .antMatchers("/tasks/**")
                     .hasAnyAuthority("manage_tasks")
+                .antMatchers("/projects/byStatus/{statusId}")
+                    .hasAnyAuthority("manage_tasks")
                 .antMatchers("/projects/**")
                     .hasAnyAuthority("manage_projects")
                 .antMatchers("/")
