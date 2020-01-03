@@ -58,6 +58,63 @@
                 </option>
             </select>
         </div>
+
+        <div class="space-from-top">
+            <button class="btn btn-primary" id="create-task">Create task</button>
+            <button class="btn btn-warning disabled" id="edit-task">Edit task</button>
+            <button class="btn btn-danger disabled" id="delete-task">Delete task</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="create-task-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create task</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="nameCreate" class="form-control" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="descriptionCreate" class="form-control" placeholder="Description">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedStartDateCreate" class="form-control" placeholder="Planned Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedEndDateCreate" class="form-control" placeholder="Planned End Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="parentTaskCreate">Parent Task</label>
+                                </div>
+                                <select class="custom-select" id="parentTaskCreate">
+
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span id="saving-create-task">Saving...</span>
+                    <a class="btn btn-primary" href="#" id="save-created-task">Create</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

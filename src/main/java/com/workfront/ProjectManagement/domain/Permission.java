@@ -1,11 +1,11 @@
 package com.workfront.ProjectManagement.domain;
 
 public class Permission {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -17,7 +17,7 @@ public class Permission {
         return description;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

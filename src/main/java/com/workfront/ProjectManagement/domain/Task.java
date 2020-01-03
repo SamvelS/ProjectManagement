@@ -13,7 +13,7 @@ import java.util.Date;
 
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
-public class Project {
+public class Task {
     private Integer id;
 
     @NotBlank(message = "Name is required", groups = FirstOrder.class)
@@ -40,67 +40,87 @@ public class Project {
 
     private String status;
 
+    private Integer projectId;
+
+    private Integer parentTaskId;
+
     public Integer getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Date getPlannedStartDate() {
-        return plannedStartDate;
-    }
-
-    public Date getPlannedEndDate() {
-        return plannedEndDate;
-    }
-
-    public Date getActualStartDate() {
-        return actualStartDate;
-    }
-
-    public Date getActualEndDate() {
-        return actualEndDate;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public Date getPlannedStartDate() {
+        return plannedStartDate;
+    }
+
     public void setPlannedStartDate(Date plannedStartDate) {
         this.plannedStartDate = plannedStartDate;
+    }
+
+    public Date getPlannedEndDate() {
+        return plannedEndDate;
     }
 
     public void setPlannedEndDate(Date plannedEndDate) {
         this.plannedEndDate = plannedEndDate;
     }
 
+    public Date getActualStartDate() {
+        return actualStartDate;
+    }
+
     public void setActualStartDate(Date actualStartDate) {
         this.actualStartDate = actualStartDate;
     }
 
-    public void setActualEndDate(Date anctualEndDate) {
-        this.actualEndDate = anctualEndDate;
+    public Date getActualEndDate() {
+        return actualEndDate;
+    }
+
+    public void setActualEndDate(Date actualEndDate) {
+        this.actualEndDate = actualEndDate;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+    public Integer getParentTaskId() {
+        return parentTaskId;
+    }
+
+    public void setParentTaskId(Integer parentTaskId) {
+        this.parentTaskId = parentTaskId;
     }
 }
