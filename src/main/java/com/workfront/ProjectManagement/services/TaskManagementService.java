@@ -18,6 +18,8 @@ public interface TaskManagementService {
 
     List<Task> getTasksInfo(int from, int count, int projectId, int userId);
 
+    Task getTaskDetails(int id);
+
     int getTasksCount(int projectId, int userId);
 
     void createTask(Task task);

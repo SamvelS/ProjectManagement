@@ -2,7 +2,9 @@ package com.workfront.ProjectManagement.repositoriy.impl;
 
 import com.workfront.ProjectManagement.domain.ProjectUserDetails;
 import com.workfront.ProjectManagement.domain.Task;
+import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.repositoriy.TaskRepository;
+import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,9 @@ public class JDBCTaskRepository implements TaskRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private ProjectUserDetails userDetails;
 
@@ -49,6 +53,37 @@ public class JDBCTaskRepository implements TaskRepository {
     }
 
     @Override
+    public Task getTaskDetails(int id) {
+        Task taskDetails = this.jdbcTemplate.queryForObject("select * from task where id=?",
+                new Object[]{id}, (rs, i) -> {
+                    Task task = new Task();
+                    task.setId(rs.getInt("id"));
+                    task.setName(rs.getString("name"));
+                    task.setDescription(rs.getString("description"));
+                    task.setCreatedOn(rs.getTimestamp("created_on"));
+                    task.setPlannedStartDate(rs.getTimestamp("planned_start_date"));
+                    task.setPlannedEndDate(rs.getTimestamp("planned_end_date"));
+                    task.setActualStartDate(rs.getTimestamp("actual_start_date"));
+                    task.setActualEndDate(rs.getTimestamp("actual_end_date"));
+                    User createdBy = new User();
+                    createdBy.setId(rs.getInt("created_by"));
+                    task.setCreatedBy(createdBy);
+                    Task parentTask = new Task();
+                    parentTask.setId(rs.getInt("parent_task_id"));
+
+                    return task;
+                });
+
+        if(taskDetails != null) {
+            taskDetails.setCreatedBy(this.userRepository.getUserById(taskDetails.getCreatedBy().getId()));
+        }
+
+        // TODO: add status
+
+        return taskDetails;
+    }
+
+    @Override
     public int getTasksCount(int projectId, int userId) {
         String query = "select count(id) from task t";
 
@@ -73,9 +108,9 @@ public class JDBCTaskRepository implements TaskRepository {
 
     @Override
     public void createTask(Task task) throws AuthenticationCredentialsNotFoundException {
-        this.jdbcTemplate.update("insert into task(name, description, created_on, created_by, planned_start_date, planned_end_date, status_id, project_id, parent_task_id)" +
-                " values(?,?,now(),?,?,?,1,?,?)",
-                new Object[]{ task.getName(), task.getDescription(), this.userDetails.getUserId(), task.getPlannedStartDate(), task.getPlannedEndDate(), task.getProjectId(), task.getParentTaskId() });
+        this.jdbcTemplate.update("insert into task(name, description, created_on, created_by, planned_start_date, planned_end_date, project_id, parent_task_id)" +
+                " values(?,?,now(),?,?,?,?,?)",
+                new Object[]{ task.getName(), task.getDescription(), this.getUserDetails().getUserId(), task.getPlannedStartDate(), task.getPlannedEndDate(), task.getProjectId(), task.getParentTask().getId() });
     }
 
     private ProjectUserDetails getUserDetails() {

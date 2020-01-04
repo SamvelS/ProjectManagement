@@ -49,6 +49,11 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     }
 
     @Override
+    public Task getTaskDetails(int id) {
+        return this.taskRepository.getTaskDetails(id);
+    }
+
+    @Override
     public int getTasksCount(int projectId, int userId) {
         return this.taskRepository.getTasksCount(projectId, userId);
     }

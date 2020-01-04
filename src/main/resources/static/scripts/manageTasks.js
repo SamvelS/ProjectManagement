@@ -60,7 +60,9 @@ async function loadTasksData(from = 1, count = 20) {
                     <input type="checkbox" class="select-task-check" value="${id}">
                 </div>`,
         name,
-        description
+        description,
+        parentTask: ``,
+        details: `<a href="/tasks/${id}">details</a>`
     }));
 
     tasksDatagrid.datagrid({ data: (tasks) });
@@ -132,7 +134,7 @@ async function createTask() {
         plannedStartDate: $('#plannedStartDateCreate').val(),
         plannedEndDate: $('#plannedEndDateCreate').val(),
         projectId: $('#projects option:selected').val(),
-        parentTaskId: $('#parentTaskCreate option:selected').val()
+        parentTask: { id: (typeof $('#parentTaskCreate option:selected').val() === "undefined" ? null : $('#parentTaskCreate option:selected').val())}
     };
 
     try {

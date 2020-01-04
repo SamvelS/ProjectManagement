@@ -14,7 +14,7 @@ import java.util.Date;
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Task {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Name is required", groups = FirstOrder.class)
     @Size(min = 2, max = 100, message = "Name length should be between 2 and 100", groups = SecondOrder.class)
@@ -38,17 +38,22 @@ public class Task {
     @JsonFormat(pattern = "mm/dd/yyyy")
     private Date actualEndDate;
 
+    @JsonFormat(pattern = "mm/dd/yyyy")
+    private Date createdOn;
+
     private String status;
 
     private int projectId;
 
-    private int parentTaskId;
+    private Task parentTask;
 
-    public int getId() {
+    private User createdBy;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -116,11 +121,27 @@ public class Task {
         this.projectId = projectId;
     }
 
-    public int getParentTaskId() {
-        return parentTaskId;
+    public Task getParentTask() {
+        return parentTask;
     }
 
-    public void setParentTaskId(int parentTaskId) {
-        this.parentTaskId = parentTaskId;
+    public void setParentTaskId(Task parentTask) {
+        this.parentTask = parentTask;
+    }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }
