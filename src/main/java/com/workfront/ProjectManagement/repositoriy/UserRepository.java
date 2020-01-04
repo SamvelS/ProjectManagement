@@ -13,6 +13,8 @@ public interface UserRepository {
 
     List<User> getUsers(int from, int count);
 
+    List<User> getAllUsers();
+
     void createUser(User user);
 
     void editUser(User user);

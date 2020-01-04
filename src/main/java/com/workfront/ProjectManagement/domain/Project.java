@@ -14,7 +14,7 @@ import java.util.Date;
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Project {
-    private Integer id;
+    private int id;
 
     @NotBlank(message = "Name is required", groups = FirstOrder.class)
     @Size(min = 2, max = 100, message = "Name length should be between 2 and 100", groups = SecondOrder.class)
@@ -40,7 +40,7 @@ public class Project {
 
     private String status;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -72,7 +72,7 @@ public class Project {
         return status;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

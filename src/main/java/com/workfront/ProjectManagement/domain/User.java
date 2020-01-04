@@ -12,7 +12,7 @@ import java.util.List;
 
 @ToString
 public class User {
-    private Integer id;
+    private int id;
 
     @NotBlank(message="First name is required", groups = FirstOrder.class)
     @Size(min = 2, max = 50, message = "Fist name length should be between 2 and 50", groups = SecondOrder.class)
@@ -31,12 +31,12 @@ public class User {
     @Size(min = 6, max = 50, message = "Password length should be between 6 and 50", groups = SecondOrder.class)
     private String password;
 
-    private Integer statusId;
+    private int statusId;
 
     private List<Role> roles;
     private List<Permission> permissions;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -56,7 +56,7 @@ public class User {
         return password;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -92,7 +92,7 @@ public class User {
         this.permissions = permissions;
     }
 
-    public Integer getStatusId() { return this.statusId; }
+    public int getStatusId() { return this.statusId; }
 
-    public void setStatusId(Integer statusId) { this.statusId = statusId; }
+    public void setStatusId(int statusId) { this.statusId = statusId; }
 }

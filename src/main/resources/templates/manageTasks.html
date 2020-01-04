@@ -59,6 +59,29 @@
             </select>
         </div>
 
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="users">For Users</label>
+            </div>
+            <select class="custom-select" id="users" >
+                <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFirstName() + ' ' + user.getLastName() + (user.getEmail() ==  null ? '' : (' [' + user.getEmail() + ']'))}">
+                </option>
+            </select>
+        </div>
+
+        <div class="space-from-top" id="tasks-grid-area">
+            <table id="tasks-datagrid" class="easyui-datagrid"
+                   rownumbers="true" pagination="true">
+                <thead>
+                <tr>
+                    <th field="id" chekbox="false"></th>
+                    <th field="name" width="150">Name</th>
+                    <th field="description" width="200">Description</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
         <div class="space-from-top">
             <button class="btn btn-primary" id="create-task">Create task</button>
             <button class="btn btn-warning disabled" id="edit-task">Edit task</button>

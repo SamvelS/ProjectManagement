@@ -1,12 +1,12 @@
 package com.workfront.ProjectManagement.domain;
 
 public class Role {
-    private Integer id;
+    private int id;
     private String name;
     private String description;
     private boolean isAdmin;
 
-    public Integer getId() {
+    public int getId() {
         return this.id;
     }
 
@@ -18,7 +18,7 @@ public class Role {
         return this.description;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

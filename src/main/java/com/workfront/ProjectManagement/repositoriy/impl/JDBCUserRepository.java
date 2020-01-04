@@ -62,20 +62,14 @@ public class JDBCUserRepository implements UserRepository {
                 " order by id limit ? offset ?"
                 , new Object[] { count, from });
 
-        List<User> users = new ArrayList<>();
+        return this.mapUsers(usersToMap);
+    }
 
-        for(Map row : usersToMap) {
-            User user = new User();
-            user.setId((int)row.get("id"));
-            user.setFirstName((String) row.get("first_name"));
-            user.setLastName((String) row.get("last_name"));
-            user.setEmail((String) row.get("email"));
+    @Override
+    public List<User> getAllUsers() {
+        List<Map<String, Object>> usersToMap  = this.jdbcTemplate.queryForList("select * from account  order by first_name, last_name");
 
-            this.initializeUserRolesAndPermissions(user);
-
-            users.add(user);
-        }
-        return users;
+        return this.mapUsers(usersToMap);
     }
 
     @Override
@@ -144,6 +138,24 @@ public class JDBCUserRepository implements UserRepository {
         user.setPassword(rs.getString("password"));
         user.setStatusId(rs.getInt("status_id"));
         return user;
+    }
+
+    private List<User> mapUsers(List<Map<String, Object>> usersToMap) {
+        List<User> users = new ArrayList<>();
+
+        for(Map row : usersToMap) {
+            User user = new User();
+            user.setId((int)row.get("id"));
+            user.setFirstName((String) row.get("first_name"));
+            user.setLastName((String) row.get("last_name"));
+            user.setEmail((String) row.get("email"));
+
+            this.initializeUserRolesAndPermissions(user);
+
+            users.add(user);
+        }
+
+        return users;
     }
 
     private void initializeUserRolesAndPermissions(User user) {

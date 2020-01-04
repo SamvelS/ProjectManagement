@@ -48,7 +48,7 @@ public class ProjectUserDetails implements UserDetails {
         return this.user.getStatusId() == UserStatus.CHANGE_PASSWORD.getValue();
     }
 
-    public Integer getUserId() {
+    public int getUserId() {
         return this.user.getId();
     }
 

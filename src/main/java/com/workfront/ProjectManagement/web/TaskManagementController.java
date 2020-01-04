@@ -1,12 +1,13 @@
 package com.workfront.ProjectManagement.web;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.$Gson$Types;
 import com.sun.tools.javac.util.Pair;
 import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.Project;
 import com.workfront.ProjectManagement.domain.Task;
+import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.services.TaskManagementService;
+import com.workfront.ProjectManagement.utilities.Constants;
 import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +31,7 @@ public class TaskManagementController {
     private TaskManagementService taskManagementService;
 
     @GetMapping
-    public String getManagTasksView(Model model) {
+    public String getManageTasksView(Model model) {
         List<ActionStatus> actionStatuses = this.taskManagementService.getActionStatuses();
 
         model.addAttribute("actionStatuses", actionStatuses);
@@ -43,7 +41,26 @@ public class TaskManagementController {
         }
         model.addAttribute("projects", projects);
 
+        List<User> allUsers = new ArrayList<>();
+        allUsers.add(this.createAllUsersUser());
+        allUsers.addAll(this.taskManagementService.getAllUsers());
+        model.addAttribute("users", allUsers);
+
         return "manageTasks";
+    }
+
+    @GetMapping("/data")
+    public ResponseEntity<List<Task>>  getManageTasksData(@RequestParam(value = "projectId") int projectId,
+                                                          @RequestParam(value = "userId") int userId,
+                                                          @RequestParam(value = "from", defaultValue = "1") int from,
+                                                          @RequestParam(value = "count", defaultValue = "10") int count) {
+        return ResponseEntity.ok(this.taskManagementService.getTasksInfo(from - 1, count, projectId, userId));
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getTasksCount(@RequestParam(value = "projectId") int projectId,
+                                                 @RequestParam(value = "userId") int userId) {
+        return ResponseEntity.ok(this.taskManagementService.getTasksCount(projectId, userId));
     }
 
     @PostMapping("/add")
@@ -76,5 +93,14 @@ public class TaskManagementController {
         }
 
         return ResponseEntity.ok("");
+    }
+
+    private User createAllUsersUser() {
+        User allUsersUser = new User();
+        allUsersUser.setId(Constants.getAllUsersId());
+        allUsersUser.setFirstName(Constants.getAllUsersFirstName());
+        allUsersUser.setLastName(Constants.getAllUsersLastName());
+
+        return allUsersUser;
     }
 }

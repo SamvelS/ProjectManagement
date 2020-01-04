@@ -14,7 +14,7 @@ import java.util.Date;
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Task {
-    private Integer id;
+    private int id;
 
     @NotBlank(message = "Name is required", groups = FirstOrder.class)
     @Size(min = 2, max = 100, message = "Name length should be between 2 and 100", groups = SecondOrder.class)
@@ -40,15 +40,15 @@ public class Task {
 
     private String status;
 
-    private Integer projectId;
+    private int projectId;
 
-    private Integer parentTaskId;
+    private int parentTaskId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -108,19 +108,19 @@ public class Task {
         this.status = status;
     }
 
-    public Integer getProjectId() {
+    public int getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(Integer projectId) {
+    public void setProjectId(int projectId) {
         this.projectId = projectId;
     }
 
-    public Integer getParentTaskId() {
+    public int getParentTaskId() {
         return parentTaskId;
     }
 
-    public void setParentTaskId(Integer parentTaskId) {
+    public void setParentTaskId(int parentTaskId) {
         this.parentTaskId = parentTaskId;
     }
 }

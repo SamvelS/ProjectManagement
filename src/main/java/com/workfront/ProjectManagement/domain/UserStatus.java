@@ -4,9 +4,9 @@ public enum UserStatus {
     CHANGE_PASSWORD(1),
     ACTIVE_USER(2);
 
-    private final Integer userStatusId;
+    private final int userStatusId;
 
-    private UserStatus(Integer userStatusId) {
+    private UserStatus(int userStatusId) {
         this.userStatusId = userStatusId;
     }
 
