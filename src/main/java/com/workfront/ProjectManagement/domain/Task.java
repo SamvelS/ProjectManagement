@@ -125,7 +125,7 @@ public class Task {
         return parentTask;
     }
 
-    public void setParentTaskId(Task parentTask) {
+    public void setParentTask(Task parentTask) {
         this.parentTask = parentTask;
     }
 

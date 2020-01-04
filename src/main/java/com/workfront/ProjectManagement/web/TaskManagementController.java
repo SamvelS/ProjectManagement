@@ -57,6 +57,12 @@ public class TaskManagementController {
         return ResponseEntity.ok(this.taskManagementService.getTasksInfo(from - 1, count, projectId, userId));
     }
 
+    @GetMapping("/allData")
+    public ResponseEntity<List<Task>>  getManageTasksAllData(@RequestParam(value = "projectId") int projectId,
+                                                          @RequestParam(value = "userId") int userId) {
+        return ResponseEntity.ok(this.taskManagementService.getAllTasksInfo(projectId, userId));
+    }
+
     @GetMapping("/{id}")
     public String getTaskDetails(@PathVariable int id, Model model) {
         Task task = this.taskManagementService.getTaskDetails(id);

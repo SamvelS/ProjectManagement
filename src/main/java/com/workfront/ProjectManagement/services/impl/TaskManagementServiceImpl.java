@@ -49,6 +49,11 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     }
 
     @Override
+    public List<Task> getAllTasksInfo(int projectId, int userId) {
+        return this.taskRepository.getAllTasksInfo(projectId, userId);
+    }
+
+    @Override
     public Task getTaskDetails(int id) {
         return this.taskRepository.getTaskDetails(id);
     }

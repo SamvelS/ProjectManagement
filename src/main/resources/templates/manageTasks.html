@@ -28,7 +28,7 @@
                             <a class="nav-link text-dark" href="/users">Manage users</a>
                         </li>
                         <li class="nav-item" sec:authorize="hasAnyAuthority('manage_projects')">
-                            <a class="nav-link text-dark" href="/tasks">Manage projects</a>
+                            <a class="nav-link text-dark" href="/projects">Manage projects</a>
                         </li>
                         <li class="nav-item" sec:authorize="isAuthenticated()">
                             <form method="POST" th:action="@{/logout}">

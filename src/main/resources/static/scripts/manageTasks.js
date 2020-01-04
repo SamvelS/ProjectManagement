@@ -6,6 +6,10 @@ $(function() {
         await loadTasks();
     });
 
+    $("#projects").change(async function() {
+        await loadTasks();
+    });
+
     $("#users").change(async function() {
         loadTasks();
     });
@@ -13,12 +17,13 @@ $(function() {
     $('#plannedStartDateCreate').datepicker();
     $('#plannedEndDateCreate').datepicker();
 
-    $('#create-task').click(function () {
+    $('#create-task').click(async function () {
         if($(this).hasClass('disabled')) {
             return;
         }
 
         clearCreateTaskPopup();
+        await loadAllTasks();
         $('#saving-create-task').hide();
         $('#create-task-modal').modal('show');
     });
@@ -49,19 +54,29 @@ async function loadTasks() {
     loadTasksData().then(() => initializeTasksDataGrid()).then(async () => await loadTasksCount()).catch(err => console.log(err));
 }
 
+async function loadAllTasks() {
+    const projectId = (typeof $('#projects option:selected').val() === "undefined" ? -1 : $('#projects option:selected').val());
+    const tasks = (await axios.get('/tasks/allData?projectId=' + projectId + '&userId=' + $('#users option:selected').val())).data.map(({ id, name }) => ({
+        id,
+        name
+    }));
+    const optionsAsString = tasks.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '<option value="">none</option>');
+    $('#parentTaskCreate').html(optionsAsString);
+}
+
 async function loadTasksData(from = 1, count = 20) {
     const tasksDatagrid = $('#tasks-datagrid');
 
     const projectId = (typeof $('#projects option:selected').val() === "undefined" ? -1 : $('#projects option:selected').val());
     const tasks = (await axios.get('/tasks/data?projectId=' + projectId + '&userId=' + $('#users option:selected').val() +
-        '&from=' + from + '&count=' + count)).data.map(({ id, name, description }) => ({
+        '&from=' + from + '&count=' + count)).data.map(({ id, name, description, parentTask }) => ({
         id:`
                 <div class="checkbox-for-grid">
                     <input type="checkbox" class="select-task-check" value="${id}">
                 </div>`,
         name,
         description,
-        parentTask: ``,
+        parentTask: parentTask.id === null ? '' : `<a href="/tasks/${parentTask.id}">${parentTask.name}</a>`,
         details: `<a href="/tasks/${id}">details</a>`
     }));
 
@@ -134,7 +149,7 @@ async function createTask() {
         plannedStartDate: $('#plannedStartDateCreate').val(),
         plannedEndDate: $('#plannedEndDateCreate').val(),
         projectId: $('#projects option:selected').val(),
-        parentTask: { id: (typeof $('#parentTaskCreate option:selected').val() === "undefined" ? null : $('#parentTaskCreate option:selected').val())}
+        parentTask: { id: (typeof $('#parentTaskCreate option:selected').val() === "" ? null : $('#parentTaskCreate option:selected').val())}
     };
 
     try {

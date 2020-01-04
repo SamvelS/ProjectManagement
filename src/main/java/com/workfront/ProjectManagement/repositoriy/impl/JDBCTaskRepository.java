@@ -29,7 +29,7 @@ public class JDBCTaskRepository implements TaskRepository {
 
     @Override
     public List<Task> getTasksInfo(int from, int count, int projectId, int userId) {
-        String query = "select t.id, t.name, t.description from task t";
+        String query = "select t.id, t.name, t.description, t.parent_task_id from task t";
         List<Object> params = new ArrayList<>();
 
         boolean isForSpecificUser = (userId != Constants.getAllUsersId());
@@ -46,6 +46,37 @@ public class JDBCTaskRepository implements TaskRepository {
 
         params.add(count);
         params.add(from);
+
+        List<Map<String, Object>> rows = this.jdbcTemplate.queryForList(query, params.toArray());
+
+        List<Task> tasks = this.mapTasksInfo(rows);
+
+        for (Task task :
+                tasks) {
+            if(task.getParentTask().getId() != null) {
+                task.setParentTask(this.getTaskInfo(task.getParentTask().getId()));
+            }
+        }
+
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getAllTasksInfo(int projectId, int userId) {
+        String query = "select t.id, t.name, t.description from task t";
+        List<Object> params = new ArrayList<>();
+
+        boolean isForSpecificUser = (userId != Constants.getAllUsersId());
+        if(isForSpecificUser) {
+            query += " left join task_assignment ta on ta.task_id = t.id";
+        }
+        query += " where t.project_id=?";
+        params.add(projectId);
+        if(isForSpecificUser) {
+            query += " and ta.account_id=?";
+            params.add(userId);
+        }
+        query += " order by t.name";
 
         List<Map<String, Object>> rows = this.jdbcTemplate.queryForList(query, params.toArray());
 
@@ -79,6 +110,23 @@ public class JDBCTaskRepository implements TaskRepository {
         }
 
         // TODO: add status
+
+        return taskDetails;
+    }
+
+    @Override
+    public Task getTaskInfo(int id) {
+        Task taskDetails = this.jdbcTemplate.queryForObject("select * from task where id=?",
+                new Object[]{id}, (rs, i) -> {
+                    Task task = new Task();
+                    task.setId(rs.getInt("id"));
+                    task.setName(rs.getString("name"));
+                    task.setDescription(rs.getString("description"));
+                    Task parentTask = new Task();
+                    parentTask.setId(rs.getInt("parent_task_id"));
+
+                    return task;
+                });
 
         return taskDetails;
     }
@@ -138,7 +186,9 @@ public class JDBCTaskRepository implements TaskRepository {
             task.setId((int)row.get("id"));
             task.setName((String) row.get("name"));
             task.setDescription((String)row.get("description"));
-
+            Task parentTask = new Task();
+            parentTask.setId((Integer)row.get("parent_task_id"));
+            task.setParentTask(parentTask);
             tasks.add(task);
         }
 
