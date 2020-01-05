@@ -132,11 +132,104 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="users-create">Assigned To</label>
+                            </div>
+                            <select class="custom-select" id="users-create" multiple="true">
+                                <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFirstName() + ' ' + user.getLastName() + (user.getEmail() ==  null ? '' : (' [' + user.getEmail() + ']'))}">
+                                </option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <span id="saving-create-task">Saving...</span>
                     <a class="btn btn-primary" href="#" id="save-created-task">Create</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="edit-task-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit task</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <div>
+                                <input type="hidden" id="editingTaskId">
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" id="nameEdit" class="form-control" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="descriptionEdit" class="form-control" placeholder="Description">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedStartDateEdit" class="form-control" placeholder="Planned Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="plannedEndDateEdit" class="form-control" placeholder="Planned End Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="actualStartDateEdit" class="form-control" placeholder="Actual Start Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label-group">
+                                <input type="text" id="actualEndDateEdit" class="form-control" placeholder="Actual End Date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="projects-edit">Project</label>
+                                </div>
+                                <select class="custom-select" id="projects-edit">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="parentTaskEdit">Parent Task</label>
+                                </div>
+                                <select class="custom-select" id="parentTaskEdit">
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="users-edit">Assigned To</label>
+                            </div>
+                            <select class="custom-select" id="users-edit" multiple="true">
+                                <option th:each="user : ${users}" th:value="${user.getId()}" th:text="${user.getFirstName() + ' ' + user.getLastName() + (user.getEmail() ==  null ? '' : (' [' + user.getEmail() + ']'))}">
+                                </option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span id="loading-edit-task">Loading...</span>
+                    <span id="saving-edit-task">Saving...</span>
+                    <a class="btn btn-primary" href="#" id="save-edited-task">Save</a>
                 </div>
             </div>
         </div>

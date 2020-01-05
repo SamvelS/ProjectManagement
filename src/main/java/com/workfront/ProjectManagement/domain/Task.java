@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
@@ -25,20 +26,20 @@ public class Task {
     private String description;
 
     @NotNull(message = "Start Date is required", groups = FirstOrder.class)
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedStartDate;
 
     @NotNull(message = "End Date is required", groups = FirstOrder.class)
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedEndDate;
 
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualStartDate;
 
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualEndDate;
 
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date createdOn;
 
     private String status;
@@ -48,6 +49,8 @@ public class Task {
     private Task parentTask;
 
     private User createdBy;
+
+    private List<User> assignees;
 
     public Integer getId() {
         return id;
@@ -143,5 +146,13 @@ public class Task {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public List<User> getAssignees() {
+        return assignees;
+    }
+
+    public void setAssignees(List<User> assignees) {
+        this.assignees = assignees;
     }
 }

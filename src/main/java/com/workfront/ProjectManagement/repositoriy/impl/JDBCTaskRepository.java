@@ -8,10 +8,14 @@ import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +100,7 @@ public class JDBCTaskRepository implements TaskRepository {
                     task.setPlannedEndDate(rs.getTimestamp("planned_end_date"));
                     task.setActualStartDate(rs.getTimestamp("actual_start_date"));
                     task.setActualEndDate(rs.getTimestamp("actual_end_date"));
+                    task.setProjectId(rs.getInt("project_id"));
                     User createdBy = new User();
                     createdBy.setId(rs.getInt("created_by"));
                     task.setCreatedBy(createdBy);
@@ -111,6 +116,11 @@ public class JDBCTaskRepository implements TaskRepository {
             if(taskDetails.getParentTask().getId() != null) {
                 taskDetails.setParentTask(this.getTaskInfo(taskDetails.getParentTask().getId()));
             }
+
+            List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email from task_assignment ta"
+                    + " left join account a on ta.account_id = a.id where ta.task_id=?", new Object[]{ taskDetails.getId() });
+
+            taskDetails.setAssignees(this.mapUserInfo(rows));
         }
 
         // TODO: add status
@@ -158,11 +168,44 @@ public class JDBCTaskRepository implements TaskRepository {
         return this.jdbcTemplate.queryForObject(query, params.toArray(), Integer.class);
     }
 
+    @Transactional
     @Override
     public void createTask(Task task) throws AuthenticationCredentialsNotFoundException {
-        this.jdbcTemplate.update("insert into task(name, description, created_on, created_by, planned_start_date, planned_end_date, project_id, parent_task_id)" +
-                " values(?,?,now(),?,?,?,?,?)",
-                new Object[]{ task.getName(), task.getDescription(), this.getUserDetails().getUserId(), task.getPlannedStartDate(), task.getPlannedEndDate(), task.getProjectId(), task.getParentTask().getId() });
+        GeneratedKeyHolder holder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement statement = con.prepareStatement("insert into task(name, description, created_on, created_by, planned_start_date, planned_end_date, project_id, parent_task_id)"
+                        + " values(?,?,now(),?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                statement.setString(1, task.getName());
+                statement.setString(2, task.getDescription());
+                statement.setInt(3, getUserDetails().getUserId());
+                statement.setDate(4, new java.sql.Date(task.getPlannedStartDate().getTime()));
+                statement.setDate(5, new java.sql.Date(task.getPlannedEndDate().getTime()));
+                statement.setInt(6, task.getProjectId());
+                if (task.getParentTask().getId() == null) {
+                    statement.setNull(7, Types.INTEGER);
+                } else {
+                    statement.setInt(7, task.getParentTask().getId());
+                }
+                return statement;
+            }
+        }, holder);
+
+        int primaryKey;
+        if (holder.getKeys().size() > 1) {
+            primaryKey = (int) holder.getKeys().get("id");
+        } else {
+            primaryKey = holder.getKey().intValue();
+        }
+
+        if (!task.getAssignees().isEmpty()) {
+            task.getAssignees().forEach(asgn -> {
+                this.jdbcTemplate.update("insert into task_assignment(task_id, account_id, status_id) values(?,?,1)",
+                        new Object[]{primaryKey, asgn.getId()});
+            });
+        }
     }
 
     private ProjectUserDetails getUserDetails() {
@@ -197,5 +240,21 @@ public class JDBCTaskRepository implements TaskRepository {
         }
 
         return tasks;
+    }
+
+    private List<User> mapUserInfo(List<Map<String, Object>> rows) {
+        List<User> users = new ArrayList<>();
+
+        for(Map row : rows) {
+            User user = new User();
+            user.setId((int)row.get("account_id"));
+            user.setFirstName((String) row.get("first_name"));
+            user.setLastName((String)row.get("last_name"));
+            user.setEmail((String)row.get("email"));
+
+            users.add(user);
+        }
+
+        return users;
     }
 }

@@ -65,11 +65,14 @@
         <span th:text="${#dates.format(task.getCreatedOn(), 'MM/dd/yyyy')}"></span>
         <h5 class="space-from-top">Created By</h5>
         <span th:text="${task.getCreatedBy().getFirstName() + ' ' + task.getCreatedBy().getLastName() + ' [' + task.getCreatedBy().getEmail() + ']'}"></span>
-        <div th:if="${task.getParentTask().getId() != null}">
-            <h5 class="space-from-top">Parent Task</h5>
-            <a th:text="${task.getParentTask().getName()}" th:href="'/tasks/' + ${task.getParentTask().getId()}"></a>
-        </div>
+        <h5 class="space-from-top">Parent Task</h5>
+        <a th:if="${task.getParentTask().getId() != null}" th:text="${task.getParentTask().getName()}" th:href="'/tasks/' + ${task.getParentTask().getId()}"></a>
+        <span th:if="${task.getParentTask().getId() == null}">None</span>
         <h5 class="space-from-top">Assigned To</h5>
+        <span th:if="${task.getAssignees().isEmpty()}">None</span>
+        <div th:if="${!task.getAssignees().isEmpty()}" th:each="assignee : ${task.getAssignees()}">
+            <span th:text="${assignee.getFirstName() + ' ' + assignee.getLastName() + ' [' + assignee.getEmail() + ']'}"></span>
+        </div>
     </div>
 </body>
 </html>

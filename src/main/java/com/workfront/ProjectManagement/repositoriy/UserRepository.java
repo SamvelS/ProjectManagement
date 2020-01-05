@@ -7,7 +7,7 @@ import java.util.List;
 
 @Component
 public interface UserRepository {
-    User getUserByEmail(String email);
+    User getUserByEmail(String email, boolean getPassword);
 
     User getUserById(int id);
 

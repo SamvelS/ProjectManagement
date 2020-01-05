@@ -5,6 +5,10 @@ public class Constants {
         return -1;
     }
 
+    public static int getAllStatusesId() { return  -1; }
+
+    public static String getAllStatusesName() { return "All statuses"; }
+
     public static String getAllUsersFirstName() {
         return "All";
     }

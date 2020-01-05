@@ -35,10 +35,10 @@ public class JDBCUserRepository implements UserRepository {
     private Beans beans;
 
     @Override
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(String email, boolean getPassword) {
         User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where email=?",
                 new Object[] { email },
-                (rs, i) -> this.createUserFromResultSet(rs, i));
+                (rs, i) -> this.createUserFromResultSet(rs, i, getPassword));
 
         this.initializeUserRolesAndPermissions(requestedUser);
 
@@ -49,7 +49,7 @@ public class JDBCUserRepository implements UserRepository {
     public User getUserById(int id) {
         User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where id=?",
                 new Object[] { id },
-                (rs, i) -> this.createUserFromResultSet(rs, i));
+                (rs, i) -> this.createUserFromResultSet(rs, i, false));
 
         this.initializeUserRolesAndPermissions(requestedUser);
 
@@ -80,7 +80,7 @@ public class JDBCUserRepository implements UserRepository {
                 this.beans.passwordEncoder().encode(user.getPassword()),
                 user.getFirstName(), user.getLastName()});
 
-        User createdUser = this.getUserByEmail(user.getEmail());
+        User createdUser = this.getUserByEmail(user.getEmail(), false);
 
         for (int roleId :
                 user.getRoles().stream().map(r -> r.getId()).collect(Collectors.toList())) {
@@ -129,13 +129,15 @@ public class JDBCUserRepository implements UserRepository {
                 new Object[] { this.beans.passwordEncoder().encode(newPassword), UserStatus.ACTIVE_USER.getValue(), userId });
     }
 
-    private User createUserFromResultSet(ResultSet rs, int i) throws SQLException {
+    private User createUserFromResultSet(ResultSet rs, int i, boolean getPassword) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));
         user.setFirstName(rs.getString("first_name"));
         user.setLastName(rs.getString("last_name"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
+        if(getPassword) {
+            user.setPassword(rs.getString("password"));
+        }
         user.setStatusId(rs.getInt("status_id"));
         return user;
     }

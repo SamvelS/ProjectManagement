@@ -16,6 +16,13 @@ $(function() {
 
     $('#plannedStartDateCreate').datepicker();
     $('#plannedEndDateCreate').datepicker();
+    $('#plannedStartDateEdit').datepicker();
+    $('#plannedEndDateEdit').datepicker();
+    $('#actualStartDateEdit').datepicker();
+    $('#actualEndDateEdit').datepicker();
+
+    $('#users-edit option[value="-1"]').remove();
+    $('#users-create option[value="-1"]').remove();
 
     $('#create-task').click(async function () {
         if($(this).hasClass('disabled')) {
@@ -31,6 +38,29 @@ $(function() {
     $('#save-created-task').click(async function (event) {
         event.preventDefault();
         await createTask();
+    });
+
+    $('#tasks-grid-area').on('change', '.select-task-check', function () {
+        const selectedTasksCount = $('.select-task-check:checked').length;
+
+        if (selectedTasksCount == 1) {
+            $('#edit-task').removeClass('disabled');
+            $('#delete-task').removeClass('disabled');
+        } else {
+            $('#edit-task').addClass('disabled');
+            $('#delete-task').addClass('disabled');
+        }
+    });
+
+    $('#edit-task').click(async function () {
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+
+        $('#saving-edit-task').hide();
+        $('#edit-task-modal').modal('show');
+
+        loadEditingTaskData($('.select-task-check:checked').val());
     });
 
     loadTasks();
@@ -56,12 +86,13 @@ async function loadTasks() {
 
 async function loadAllTasks() {
     const projectId = (typeof $('#projects option:selected').val() === "undefined" ? -1 : $('#projects option:selected').val());
-    const tasks = (await axios.get('/tasks/allData?projectId=' + projectId + '&userId=' + $('#users option:selected').val())).data.map(({ id, name }) => ({
+    const tasks = (await axios.get('/tasks/allDataInfo?projectId=' + projectId + '&userId=' + $('#users option:selected').val())).data.map(({ id, name }) => ({
         id,
         name
     }));
     const optionsAsString = tasks.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '<option value="">none</option>');
     $('#parentTaskCreate').html(optionsAsString);
+    $('#parentTaskEdit').html(optionsAsString);
 }
 
 async function loadTasksData(from = 1, count = 20) {
@@ -143,13 +174,21 @@ async function createTask() {
     $('#saving-create-task').show();
     $('span.validation-error').remove();
 
+    var assignees = [];
+
+    $.each($('#users-create option:selected'), function(){
+        assignees.push({id:$(this).val()});
+
+    });
+
     const data = {
         name: $('#nameCreate').val(),
         description: $('#descriptionCreate').val(),
         plannedStartDate: $('#plannedStartDateCreate').val(),
         plannedEndDate: $('#plannedEndDateCreate').val(),
         projectId: $('#projects option:selected').val(),
-        parentTask: { id: (typeof $('#parentTaskCreate option:selected').val() === "" ? null : $('#parentTaskCreate option:selected').val())}
+        parentTask: { id: (typeof $('#parentTaskCreate option:selected').val() === "" ? null : $('#parentTaskCreate option:selected').val())},
+        assignees: assignees
     };
 
     try {
@@ -180,4 +219,37 @@ async function createTask() {
     }
 
     $('#saving-create-task').hide();
+}
+
+async function loadEditingTaskData(id) {
+    const task = (await axios.get('/tasks/details/' + id)).data;
+
+    $('#editingTaskId').val(task.id);
+    $('#nameEdit').val(task.name);
+    $('#descriptionEdit').val(task.description);
+    $('#plannedStartDateEdit').val(task.plannedStartDate);
+    $('#plannedEndDateEdit').val(task.plannedEndDate);
+    $('#actualStartDateEdit').val(task.actualStartDate);
+    $('#actualEndDateEdit').val(task.actualEndDate);
+
+    const projects = (await axios.get('/projects/byStatus/-1')).data;
+
+    const projectsAsString = projects.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
+    $('#projects-edit').html(projectsAsString);
+
+    $('#projects-edit option').each(function() {
+        if($(this).val() == task.projectId) {
+            $(this).attr('selected', 'selected');
+        }
+    });
+
+    await loadAllTasks();
+
+    $('#parentTaskEdit option').each(function () {
+        if($(this).val() == task.parentTask.id) {
+            $(this).attr('selected', 'selected');
+        }
+    });
+
+    $('#loading-edit-task').hide();
 }

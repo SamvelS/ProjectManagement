@@ -9,6 +9,7 @@ import com.workfront.ProjectManagement.repositoriy.ProjectRepository;
 import com.workfront.ProjectManagement.repositoriy.TaskRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.services.TaskManagementService;
+import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,13 @@ public class TaskManagementServiceImpl implements TaskManagementService {
 
     @Override
     public List<ActionStatus> getActionStatuses() {
-        return this.actionStatusRepository.getActionStatuses();
+        List<ActionStatus> statuses = this.actionStatusRepository.getActionStatuses();
+        ActionStatus allStatuses = new ActionStatus();
+        allStatuses.setId(Constants.getAllStatusesId());
+        allStatuses.setName(Constants.getAllStatusesName());
+
+        statuses.add(0, allStatuses);
+        return statuses;
     }
 
     @Override

@@ -25,17 +25,17 @@ public class Project {
     private String description;
 
     @NotNull(message = "Start Date is required", groups = FirstOrder.class)
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedStartDate;
 
     @NotNull(message = "End Date is required", groups = FirstOrder.class)
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedEndDate;
 
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualStartDate;
 
-    @JsonFormat(pattern = "mm/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualEndDate;
 
     private String status;

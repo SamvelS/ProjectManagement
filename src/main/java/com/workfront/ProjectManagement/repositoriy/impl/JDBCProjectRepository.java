@@ -2,6 +2,7 @@ package com.workfront.ProjectManagement.repositoriy.impl;
 
 import com.workfront.ProjectManagement.domain.Project;
 import com.workfront.ProjectManagement.repositoriy.ProjectRepository;
+import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -29,11 +30,19 @@ public class JDBCProjectRepository implements ProjectRepository {
 
     @Override
     public List<Project> getProjectsByStatusId(int statusId) {
-        List<Map<String, Object>> rows  = this.jdbcTemplate.queryForList("select prj.id, prj.name, prj.description, prj.planned_start_date,"
+        String query = "select prj.id, prj.name, prj.description, prj.planned_start_date,"
                 + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"
-                    + " left join action_status acts on acts.id = prj.status_id"
-                    + " where prj.status_id=? order by id",
-                new Object[]{ statusId });
+                + " left join action_status acts on acts.id = prj.status_id";
+
+        if(statusId != Constants.getAllStatusesId()) {
+            query += " where prj.status_id=?";
+        }
+
+        query += " order by id";
+
+        List<Map<String, Object>> rows  = (statusId != Constants.getAllStatusesId() ?
+                this.jdbcTemplate.queryForList(query, new Object[]{ statusId }) :
+                this.jdbcTemplate.queryForList(query));
 
         return this.mapProjects(rows);
     }
