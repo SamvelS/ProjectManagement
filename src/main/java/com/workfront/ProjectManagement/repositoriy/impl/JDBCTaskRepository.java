@@ -100,13 +100,17 @@ public class JDBCTaskRepository implements TaskRepository {
                     createdBy.setId(rs.getInt("created_by"));
                     task.setCreatedBy(createdBy);
                     Task parentTask = new Task();
-                    parentTask.setId(rs.getInt("parent_task_id"));
+                    parentTask.setId(rs.getObject("parent_task_id", Integer.class));
+                    task.setParentTask(parentTask);
 
                     return task;
                 });
 
         if(taskDetails != null) {
             taskDetails.setCreatedBy(this.userRepository.getUserById(taskDetails.getCreatedBy().getId()));
+            if(taskDetails.getParentTask().getId() != null) {
+                taskDetails.setParentTask(this.getTaskInfo(taskDetails.getParentTask().getId()));
+            }
         }
 
         // TODO: add status
