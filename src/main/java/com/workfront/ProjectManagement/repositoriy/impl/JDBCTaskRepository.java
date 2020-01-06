@@ -117,8 +117,8 @@ public class JDBCTaskRepository implements TaskRepository {
                 taskDetails.setParentTask(this.getTaskInfo(taskDetails.getParentTask().getId()));
             }
 
-            List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email from task_assignment ta"
-                    + " left join account a on ta.account_id = a.id where ta.task_id=?", new Object[]{ taskDetails.getId() });
+            List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email, ta.status_id from task_assignment ta"
+                    + " left join account a on ta.account_id = a.id where ta.task_id=? order by a.id", new Object[]{ taskDetails.getId() });
 
             taskDetails.setAssignees(this.mapUserInfo(rows));
         }
@@ -251,7 +251,7 @@ public class JDBCTaskRepository implements TaskRepository {
             user.setFirstName((String) row.get("first_name"));
             user.setLastName((String)row.get("last_name"));
             user.setEmail((String)row.get("email"));
-
+            user.setStatusId((int)row.get("status_id"));
             users.add(user);
         }
 

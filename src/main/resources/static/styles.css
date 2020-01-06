@@ -79,3 +79,16 @@ span.validation-error {
     min-width: 723px;
     max-width: 723px;
 }
+
+.task-status {
+    max-height: 75px;
+    min-height: 75px;
+}
+
+.float-right {
+    float: right;
+}
+
+.statuses {
+    width: 150px;
+}

@@ -4,6 +4,7 @@ $(function() {
     $( "#project-statuses" ).change(async function() {
         await loadProjectsForSelectedStatus();
         await loadTasks();
+        updateButtonStates();
     });
 
     $("#projects").change(async function() {
@@ -11,7 +12,7 @@ $(function() {
     });
 
     $("#users").change(async function() {
-        loadTasks();
+        await loadTasks();
     });
 
     $('#plannedStartDateCreate').datepicker();
@@ -41,15 +42,7 @@ $(function() {
     });
 
     $('#tasks-grid-area').on('change', '.select-task-check', function () {
-        const selectedTasksCount = $('.select-task-check:checked').length;
-
-        if (selectedTasksCount == 1) {
-            $('#edit-task').removeClass('disabled');
-            $('#delete-task').removeClass('disabled');
-        } else {
-            $('#edit-task').addClass('disabled');
-            $('#delete-task').addClass('disabled');
-        }
+        updateButtonStates();
     });
 
     $('#edit-task').click(async function () {
@@ -57,14 +50,44 @@ $(function() {
             return;
         }
 
+        $('#users-edit option:selected').prop("selected", false);
+
         $('#saving-edit-task').hide();
         $('#edit-task-modal').modal('show');
 
-        loadEditingTaskData($('.select-task-check:checked').val());
+        await loadEditingTaskData($('.select-task-check:checked').val());
+        updateUserForAssignment();
+        $('.remove-user').click(function (event) {
+            event.preventDefault();
+            removeUserFromEdit($(this).val());
+        });
     });
 
+    $('#save-edited-task').click(async function (event) {
+        event.preventDefault();
+        await editTask();
+    });
+
+    $('.add-assignment-user').click(function (event) {
+        event.preventDefault();
+        addUserForAssignment();
+    });
+
+    updateUserForAssignment();
     loadTasks();
 });
+
+function updateButtonStates(){
+    const selectedTasksCount = $('.select-task-check:checked').length;
+
+    if (selectedTasksCount == 1) {
+        $('#edit-task').removeClass('disabled');
+        $('#delete-task').removeClass('disabled');
+    } else {
+        $('#edit-task').addClass('disabled');
+        $('#delete-task').addClass('disabled');
+    }
+}
 
 async function loadProjectsForSelectedStatus() {
     const projects = (await axios.get('/projects/byStatus/' + $('#project-statuses option:selected').val())).data;
@@ -81,7 +104,7 @@ async function loadProjectsForSelectedStatus() {
 }
 
 async function loadTasks() {
-    loadTasksData().then(() => initializeTasksDataGrid()).then(async () => await loadTasksCount()).catch(err => console.log(err));
+    loadTasksData().then(() => initializeTasksDataGrid()).then(async () => await loadTasksCount()).then(() => updateButtonStates()).catch(err => console.log(err));
 }
 
 async function loadAllTasks() {
@@ -168,6 +191,7 @@ function clearCreateTaskPopup() {
     $('#plannedStartDateCreate').val('');
     $('#plannedEndDateCreate').val('');
     $('span.validation-error').remove();
+    $('#users-create option:selected').prop("selected", false);
 }
 
 async function createTask() {
@@ -178,7 +202,6 @@ async function createTask() {
 
     $.each($('#users-create option:selected'), function(){
         assignees.push({id:$(this).val()});
-
     });
 
     const data = {
@@ -232,6 +255,28 @@ async function loadEditingTaskData(id) {
     $('#actualStartDateEdit').val(task.actualStartDate);
     $('#actualEndDateEdit').val(task.actualEndDate);
 
+    const userStatusesAsString = task.assignees.reduce((accumulator, {id, firstName, lastName, email, statusId}) =>
+    accumulator + `<li value="${id}">${firstName} ${lastName} [${email}]<button class="btn-primary remove-user float-right" value="${id}">Remove</button><select class="float-right"></select></li>`, '');
+    $('#status-by-user').html(userStatusesAsString);
+
+    $('#status-by-user li > select').each(function(){
+        $(this).html($('#project-statuses').html());
+        $(this).find('option').get(0).remove();
+    });
+
+    task.assignees.forEach((item, index) => {
+        $('#status-by-user li[value="' + item.id + '"] option').each(function() {
+            if($(this).val() == item.statusId) {
+                $(this).attr('selected', 'selected');
+            }
+        });
+
+        $('#users-edit option').each(function () {
+            if($(this).val() == item.id) {
+                $(this).attr('selected', 'selected');
+            }
+        });
+    });
     const projects = (await axios.get('/projects/byStatus/-1')).data;
 
     const projectsAsString = projects.reduce((accumulator, {name, id}) => accumulator + `<option value="${id}">${name}</option>`, '');
@@ -252,4 +297,54 @@ async function loadEditingTaskData(id) {
     });
 
     $('#loading-edit-task').hide();
+}
+
+async function editTask() {
+    $('#saving-edit-task').show();
+    $('span.validation-error').remove();
+
+    $.each($('#users-create option:selected'), function(){
+        assignees.push({id:$(this).val()});
+    });
+
+    const data = {
+        name: $('#nameEdit').val(),
+        description: $('#descriptionEdit').val(),
+        plannedStartDate: $('#plannedStartDateEdit').val(),
+        plannedEndDate: $('#plannedEndDateEdit').val(),
+        actualStartDate: $('#actualStartDateEdit').val(),
+        actualEndDate: $('#actualEndDateEdit').val(),
+        projectId: $('#projects-edit option:selected').val(),
+        parentTask: { id: (typeof $('#parentTaskEdit option:selected').val() === "" ? null : $('#parentTaskEdit option:selected').val())},
+        assignees: assignees
+    };
+}
+
+function removeUserFromEdit(id) {
+    $('#status-by-user li[value="' + id + '"]').remove();
+    updateUserForAssignment();
+}
+
+function addUserForAssignment() {
+    const userId = $('#users-to-add-for-assignment option:selected').val();
+    const userDetails = $('#users-to-add-for-assignment option:selected').text();
+    $('#status-by-user').append(`<li value="` + userId + `">` + userDetails + `<button class="btn-primary remove-user float-right" value="` + userId + `">Remove</button><select class="float-right"></select></li>`);
+
+    var lastLi = $('#status-by-user li > select').last();
+    lastLi.html($('#project-statuses').html());
+    lastLi.find('option').get(0).remove();
+
+    var lastBtn = $('#status-by-user li > button').last();
+    lastBtn.click(function (event) {
+        event.preventDefault();
+        removeUserFromEdit($(this).val());
+    });
+    updateUserForAssignment();
+}
+
+function updateUserForAssignment() {
+    $('#users-to-add-for-assignment').html($('#users-edit').html());
+    $.each($('#status-by-user li'), function() {
+        $('#users-to-add-for-assignment option[value="' + $(this).val() +'"]').remove()
+    });
 }
