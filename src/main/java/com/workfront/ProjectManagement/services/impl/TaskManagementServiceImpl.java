@@ -74,4 +74,9 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     public void createTask(Task task) {
         this.taskRepository.createTask(task);
     }
+
+    @Override
+    public void editTask(Task task) {
+        this.taskRepository.editTask(task);
+    }
 }

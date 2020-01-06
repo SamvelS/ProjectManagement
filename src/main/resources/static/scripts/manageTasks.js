@@ -194,6 +194,16 @@ function clearCreateTaskPopup() {
     $('#users-create option:selected').prop("selected", false);
 }
 
+function clearEditTaskPopup() {
+    $('#nameEdit').val('');
+    $('#descriptionEdit').val('');
+    $('#plannedStartDateEdit').val('');
+    $('#plannedEndDateCEdit').val('');
+    $('#actualStartDateEdit').val('');
+    $('#actualEndDateEdit').val('');
+    $('span.validation-error').remove();
+}
+
 async function createTask() {
     $('#saving-create-task').show();
     $('span.validation-error').remove();
@@ -303,11 +313,14 @@ async function editTask() {
     $('#saving-edit-task').show();
     $('span.validation-error').remove();
 
-    $.each($('#users-create option:selected'), function(){
-        assignees.push({id:$(this).val()});
+    var assignees = [];
+
+    $.each($('#status-by-user li'), function(){
+        assignees.push({id:$(this).val(), statusId:$(this).children("select").children("option:selected").val()});
     });
 
     const data = {
+        id: $('#editingTaskId').val(),
         name: $('#nameEdit').val(),
         description: $('#descriptionEdit').val(),
         plannedStartDate: $('#plannedStartDateEdit').val(),
@@ -318,6 +331,35 @@ async function editTask() {
         parentTask: { id: (typeof $('#parentTaskEdit option:selected').val() === "" ? null : $('#parentTaskEdit option:selected').val())},
         assignees: assignees
     };
+
+    try {
+        const response = await axios({
+            method: 'post',
+            url: '/tasks/edit',
+            data
+        });
+
+        $('#edit-task-modal').modal('hide');
+        clearEditTaskPopup();
+        location.reload();
+    }
+    catch (error) {
+        if(error.response) {
+            if(error.response.status == 400) {
+
+                error.response.data.forEach((item, index) => {
+                    if($("#" + item.fst + "Edit").length > 0) {
+                        $("<span class='validation-error'>" + item.snd + "</span>").insertBefore($("#" + item.fst + "Edit"));
+                    }
+                });
+            }
+        }
+        else {
+            console.log(error);
+        }
+    }
+
+    $('#saving-edit-task').hide();
 }
 
 function removeUserFromEdit(id) {

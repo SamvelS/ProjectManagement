@@ -18,4 +18,6 @@ public interface TaskRepository {
     int getTasksCount(int projectId, int userId);
 
     void createTask(Task task);
+
+    void editTask(Task task);
 }

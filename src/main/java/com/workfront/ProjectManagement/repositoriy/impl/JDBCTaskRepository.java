@@ -207,6 +207,25 @@ public class JDBCTaskRepository implements TaskRepository {
             });
         }
     }
+    
+    @Transactional
+    @Override
+    public void editTask(Task task) {
+        this.jdbcTemplate.update("update task set name=?, description=?, planned_start_date=?, planned_end_date=?, actual_start_date=?, actual_end_date=?," +
+                        " project_id=?, parent_task_id=? where id=?",
+                new Object[]{ task.getName(), task.getDescription(), task.getPlannedStartDate(), task.getPlannedEndDate(), task.getActualStartDate(),
+                        task.getActualEndDate(), task.getProjectId(), task.getParentTask().getId(), task.getId() });
+
+        this.jdbcTemplate.update("delete from task_assignment where task_id=?", new Object[] { task.getId() });
+
+        if(task.getAssignees() != null && !task.getAssignees().isEmpty()) {
+            for (User assignee :
+                    task.getAssignees()) {
+                this.jdbcTemplate.update("insert into task_assignment(task_id, account_id, status_id)" +
+                        " values(?,?,?)", new Object[]{ task.getId(), assignee.getId(), assignee.getStatusId() });
+            }
+        }
+    }
 
     private ProjectUserDetails getUserDetails() {
         if (this.userDetails != null) {
