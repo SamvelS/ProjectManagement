@@ -1,8 +1,10 @@
 package com.workfront.ProjectManagement.repositoriy.impl;
 
+import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.ProjectUserDetails;
 import com.workfront.ProjectManagement.domain.Task;
 import com.workfront.ProjectManagement.domain.User;
+import com.workfront.ProjectManagement.repositoriy.ActionStatusRepository;
 import com.workfront.ProjectManagement.repositoriy.TaskRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.utilities.Constants;
@@ -29,6 +31,9 @@ public class JDBCTaskRepository implements TaskRepository {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ActionStatusRepository actionStatusRepository;
+
     private ProjectUserDetails userDetails;
 
     @Override
@@ -54,12 +59,14 @@ public class JDBCTaskRepository implements TaskRepository {
         List<Map<String, Object>> rows = this.jdbcTemplate.queryForList(query, params.toArray());
 
         List<Task> tasks = this.mapTasksInfo(rows);
+        List<ActionStatus> actionStatuses = this.actionStatusRepository.getActionStatuses();
 
         for (Task task :
                 tasks) {
             if(task.getParentTask().getId() != null) {
                 task.setParentTask(this.getTaskInfo(task.getParentTask().getId()));
             }
+            this.setTaskAssigneeAndStatus(task, actionStatuses);
         }
 
         return tasks;
@@ -82,9 +89,7 @@ public class JDBCTaskRepository implements TaskRepository {
         }
         query += " order by t.name";
 
-        List<Map<String, Object>> rows = this.jdbcTemplate.queryForList(query, params.toArray());
-
-        return this.mapTasksInfo(rows);
+        return this.mapTasksInfo(this.jdbcTemplate.queryForList(query, params.toArray()));
     }
 
     @Override
@@ -117,15 +122,31 @@ public class JDBCTaskRepository implements TaskRepository {
                 taskDetails.setParentTask(this.getTaskInfo(taskDetails.getParentTask().getId()));
             }
 
-            List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email, ta.status_id from task_assignment ta"
-                    + " left join account a on ta.account_id = a.id where ta.task_id=? order by a.id", new Object[]{ taskDetails.getId() });
+            List<ActionStatus> actionStatuses = this.actionStatusRepository.getActionStatuses();
 
-            taskDetails.setAssignees(this.mapUserInfo(rows));
+            setTaskAssigneeAndStatus(taskDetails, actionStatuses);
         }
 
-        // TODO: add status
-
         return taskDetails;
+    }
+
+    private void setTaskAssigneeAndStatus(Task task, List<ActionStatus> actionStatuses) {
+        List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email, ta.status_id from task_assignment ta"
+                + " left join account a on ta.account_id = a.id where ta.task_id=? order by a.id", new Object[]{ task.getId() });
+
+        task.setAssignees(this.mapUserInfo(rows));
+
+        String status = actionStatuses.stream().filter(s -> s.getId() == Constants.getNotStartedActionStatusId()).findFirst().get().getName();
+
+        if(task.getAssignees() != null && !task.getAssignees().isEmpty()) {
+            if (task.getAssignees().stream().anyMatch(a -> a.getStatusId() == Constants.getInProgressActionStatusId())) {
+                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getInProgressActionStatusId()).findFirst().get().getName();
+            }
+            else if(task.getAssignees().stream().allMatch(a -> a.getStatusId() == Constants.getCompletedActionStatusId())) {
+                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getCompletedActionStatusId()).findFirst().get().getName();
+            }
+        }
+        task.setStatus(status);
     }
 
     @Override

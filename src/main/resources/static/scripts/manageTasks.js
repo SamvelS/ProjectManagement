@@ -123,13 +123,14 @@ async function loadTasksData(from = 1, count = 20) {
 
     const projectId = (typeof $('#projects option:selected').val() === "undefined" ? -1 : $('#projects option:selected').val());
     const tasks = (await axios.get('/tasks/data?projectId=' + projectId + '&userId=' + $('#users option:selected').val() +
-        '&from=' + from + '&count=' + count)).data.map(({ id, name, description, parentTask }) => ({
+        '&from=' + from + '&count=' + count)).data.map(({ id, name, description, status, parentTask }) => ({
         id:`
                 <div class="checkbox-for-grid">
                     <input type="checkbox" class="select-task-check" value="${id}">
                 </div>`,
         name,
         description,
+        status,
         parentTask: parentTask.id === null ? '' : `<a href="/tasks/${parentTask.id}">${parentTask.name}</a>`,
         details: `<a href="/tasks/${id}">details</a>`
     }));

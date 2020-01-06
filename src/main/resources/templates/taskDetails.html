@@ -51,6 +51,7 @@
         <h5 class="space-from-top">Description</h5>
         <span th:text="${task.getDescription()}"></span>
         <h5 class="space-from-top">Status</h5>
+        <span th:text="${task.getStatus()}"></span>
         <h5 class="space-from-top">Planned Start Date</h5>
         <span th:text="${#dates.format(task.getPlannedStartDate(), 'MM/dd/yyyy')}"></span>
         <h5 class="space-from-top">Planned End Date</h5>
@@ -71,7 +72,12 @@
         <h5 class="space-from-top">Assigned To</h5>
         <span th:if="${task.getAssignees().isEmpty()}">None</span>
         <div th:if="${!task.getAssignees().isEmpty()}" th:each="assignee : ${task.getAssignees()}">
-            <span th:text="${assignee.getFirstName() + ' ' + assignee.getLastName() + ' [' + assignee.getEmail() + ']'}"></span>
+            <span th:text="${assignee.getFirstName() + ' ' + assignee.getLastName() + ' [' + assignee.getEmail() + '] -'}"></span>
+            <th:block th:switch="${assignee.getStatusId()}">
+                <span th:case="1">not started</span>
+                <span th:case="2">in progress</span>
+                <span th:case="3">completed</span>
+            </th:block>
         </div>
     </div>
 </body>
