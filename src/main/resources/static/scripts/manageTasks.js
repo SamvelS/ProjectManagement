@@ -73,6 +73,14 @@ $(function() {
         addUserForAssignment();
     });
 
+    $('#delete-task').click(async function () {
+        if($(this).hasClass('disabled')) {
+            return;
+        }
+
+        deleteSelectedTask();
+    });
+
     updateUserForAssignment();
     loadTasks();
 });
@@ -390,4 +398,18 @@ function updateUserForAssignment() {
     $.each($('#status-by-user li'), function() {
         $('#users-to-add-for-assignment option[value="' + $(this).val() +'"]').remove()
     });
+}
+
+async function deleteSelectedTask() {
+    try {
+        const response = await axios({
+            method: 'delete',
+            url: '/tasks/' + $('.select-task-check:checked').val()
+        });
+
+        location.reload();
+    }
+    catch (error) {
+        console.log(error);
+    }
 }

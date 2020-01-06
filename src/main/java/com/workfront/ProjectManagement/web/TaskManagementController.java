@@ -154,6 +154,13 @@ public class TaskManagementController {
         return ResponseEntity.ok("");
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> processDeleteTask(@PathVariable int id) {
+        this.taskManagementService.deleteTaskById(id);
+
+        return ResponseEntity.ok("");
+    }
+
     private User createAllUsersUser() {
         User allUsersUser = new User();
         allUsersUser.setId(Constants.getAllUsersId());

@@ -130,25 +130,6 @@ public class JDBCTaskRepository implements TaskRepository {
         return taskDetails;
     }
 
-    private void setTaskAssigneeAndStatus(Task task, List<ActionStatus> actionStatuses) {
-        List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email, ta.status_id from task_assignment ta"
-                + " left join account a on ta.account_id = a.id where ta.task_id=? order by a.id", new Object[]{ task.getId() });
-
-        task.setAssignees(this.mapUserInfo(rows));
-
-        String status = actionStatuses.stream().filter(s -> s.getId() == Constants.getNotStartedActionStatusId()).findFirst().get().getName();
-
-        if(task.getAssignees() != null && !task.getAssignees().isEmpty()) {
-            if (task.getAssignees().stream().anyMatch(a -> a.getStatusId() == Constants.getInProgressActionStatusId())) {
-                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getInProgressActionStatusId()).findFirst().get().getName();
-            }
-            else if(task.getAssignees().stream().allMatch(a -> a.getStatusId() == Constants.getCompletedActionStatusId())) {
-                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getCompletedActionStatusId()).findFirst().get().getName();
-            }
-        }
-        task.setStatus(status);
-    }
-
     @Override
     public Task getTaskInfo(int id) {
         Task taskDetails = this.jdbcTemplate.queryForObject("select * from task where id=?",
@@ -248,6 +229,16 @@ public class JDBCTaskRepository implements TaskRepository {
         }
     }
 
+    @Transactional
+    @Override
+    public void deleteTaskById(int id) {
+        this.jdbcTemplate.update("delete from task_assignment where task_id=?", new Object[] { id });
+
+        this.jdbcTemplate.update("update task set parent_task_id=null where parent_task_id=?", new Object[] { id });
+
+        this.jdbcTemplate.update("delete from task where id=?",  new Object[] { id });
+    }
+
     private ProjectUserDetails getUserDetails() {
         if (this.userDetails != null) {
             return this.userDetails;
@@ -296,5 +287,24 @@ public class JDBCTaskRepository implements TaskRepository {
         }
 
         return users;
+    }
+
+    private void setTaskAssigneeAndStatus(Task task, List<ActionStatus> actionStatuses) {
+        List<Map<String, Object>> rows =  this.jdbcTemplate.queryForList("select a.id as account_id, a.first_name, a.last_name, a.email, ta.status_id from task_assignment ta"
+                + " left join account a on ta.account_id = a.id where ta.task_id=? order by a.id", new Object[]{ task.getId() });
+
+        task.setAssignees(this.mapUserInfo(rows));
+
+        String status = actionStatuses.stream().filter(s -> s.getId() == Constants.getNotStartedActionStatusId()).findFirst().get().getName();
+
+        if(task.getAssignees() != null && !task.getAssignees().isEmpty()) {
+            if (task.getAssignees().stream().anyMatch(a -> a.getStatusId() == Constants.getInProgressActionStatusId())) {
+                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getInProgressActionStatusId()).findFirst().get().getName();
+            }
+            else if(task.getAssignees().stream().allMatch(a -> a.getStatusId() == Constants.getCompletedActionStatusId())) {
+                status = actionStatuses.stream().filter(s -> s.getId() == Constants.getCompletedActionStatusId()).findFirst().get().getName();
+            }
+        }
+        task.setStatus(status);
     }
 }

@@ -20,4 +20,6 @@ public interface TaskRepository {
     void createTask(Task task);
 
     void editTask(Task task);
+
+    void deleteTaskById(int id);
 }

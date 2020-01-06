@@ -6,6 +6,7 @@ import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -87,11 +88,14 @@ public class JDBCProjectRepository implements ProjectRepository {
                 project.getActualEndDate(), project.getStatus(), project.getId() });
     }
 
+    @Transactional
     @Override
     public void deleteProjectById(int id) {
-        this.jdbcTemplate.update("delete from project where id=?", new Object[]{ id });
+        this.jdbcTemplate.update("delete from task_assignment where task_id in (select id from task where project_id=?)", new Object[] { id });
 
-        // TODO : delete from task as well
+        this.jdbcTemplate.update("delete from task where id in (select id from task where project_id=?)",  new Object[] { id });
+
+        this.jdbcTemplate.update("delete from project where id=?", new Object[] { id });
     }
 
     private List<Project> mapProjects(List<Map<String, Object>> rows) {

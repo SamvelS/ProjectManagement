@@ -110,11 +110,11 @@ public class JDBCUserRepository implements UserRepository {
     @Override
     @Transactional
     public void deleteUserById(int id) {
-        this.jdbcTemplate.update("delete from account_role where account_id=?", new Object[]{ id });
+        this.jdbcTemplate.update("delete from task_assignment where account_id=?", new Object[] { id });
 
-        this.jdbcTemplate.update("delete from account where id=?", new Object[]{ id });
+        this.jdbcTemplate.update("delete from account_role where account_id=?", new Object[] { id });
 
-        // TODO : delete from task as well
+        this.jdbcTemplate.update("delete from account where id=?", new Object[] { id });
     }
 
     @Override

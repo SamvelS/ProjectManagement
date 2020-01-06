@@ -27,4 +27,6 @@ public interface TaskManagementService {
     void createTask(Task task);
 
     void editTask(Task task);
+
+    void deleteTaskById(int id);
 }
