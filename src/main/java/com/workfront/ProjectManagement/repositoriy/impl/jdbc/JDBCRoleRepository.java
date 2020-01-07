@@ -1,8 +1,9 @@
-package com.workfront.ProjectManagement.repositoriy.impl;
+package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
 import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCRoleRepository implements RoleRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;

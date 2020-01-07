@@ -1,4 +1,4 @@
-package com.workfront.ProjectManagement.repositoriy.impl;
+package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
 import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.ProjectUserDetails;
@@ -9,6 +9,7 @@ import com.workfront.ProjectManagement.repositoriy.TaskRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.utilities.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCTaskRepository implements TaskRepository {
 
     @Autowired

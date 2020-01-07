@@ -1,8 +1,9 @@
-package com.workfront.ProjectManagement.repositoriy.impl;
+package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
 import com.workfront.ProjectManagement.domain.Permission;
 import com.workfront.ProjectManagement.repositoriy.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCPermissionRepository implements PermissionRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;

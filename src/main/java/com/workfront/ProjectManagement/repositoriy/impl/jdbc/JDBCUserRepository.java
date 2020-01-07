@@ -1,4 +1,4 @@
-package com.workfront.ProjectManagement.repositoriy.impl;
+package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
 import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
@@ -8,6 +8,7 @@ import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import com.workfront.ProjectManagement.repositoriy.UserRepository;
 import com.workfront.ProjectManagement.utilities.Beans;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCUserRepository implements UserRepository {
 
     @Autowired

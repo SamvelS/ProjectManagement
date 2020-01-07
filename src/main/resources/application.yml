@@ -6,3 +6,7 @@ spring:
       url: jdbc:postgresql://localhost:5432/ProjectManagement
       username: postgres
       password: postgres
+
+dbType:
+  hibernate
+#  jdbc
