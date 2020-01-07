@@ -1,10 +1,31 @@
 package com.workfront.ProjectManagement.domain;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "role")
 public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
-    private boolean isAdmin;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable
+
+            (
+                    name = "role_permission",
+                    joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+                    inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+            )
+    private List<Permission> permissions;
 
     public int getId() {
         return this.id;
@@ -30,11 +51,11 @@ public class Role {
         this.description = description;
     }
 
-    public boolean isAdmin() {
-        return this.isAdmin;
+    public List<Permission> getPermissions() {
+        return permissions;
     }
 
-    public void setAdmin(boolean admin) {
-        this.isAdmin = admin;
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
     }
 }

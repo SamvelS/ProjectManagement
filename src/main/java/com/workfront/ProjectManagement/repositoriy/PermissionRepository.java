@@ -7,5 +7,5 @@ import java.util.List;
 
 @Component
 public interface PermissionRepository {
-    List<Permission> getPermissionsForRoles(List<Integer> ids);
+    List<Permission> getPermissionsForRole(Integer id);
 }

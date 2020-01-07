@@ -1,9 +1,9 @@
 package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
 import com.workfront.ProjectManagement.domain.Role;
+import com.workfront.ProjectManagement.repositoriy.PermissionRepository;
 import com.workfront.ProjectManagement.repositoriy.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,25 +12,31 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCRoleRepository implements RoleRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private PermissionRepository permissionRepository;
+
     @Override
     public List<Role> getRoles() {
-        List<Map<String, Object>> rows  = this.jdbcTemplate.queryForList("select * from Role r");
+        List<Role> roles  = this.mapRoles(this.jdbcTemplate.queryForList("select * from Role r"));
 
-        return this.mapRoles(rows);
+        this.setPermissions(roles);
+
+        return roles;
     }
 
     @Override
     public List<Role> getUserRoles(int userId) {
-        List<Map<String, Object>> rows  = this.jdbcTemplate.queryForList("select * from Role r" +
+        List<Role> roles = this.mapRoles(this.jdbcTemplate.queryForList("select * from Role r" +
                 " left join account_role ar on r.id = ar.role_id" +
-                " where ar.account_id=?", new Object[] { userId });
+                " where ar.account_id=?", new Object[] { userId }));
 
-        return this.mapRoles(rows);
+        this.setPermissions(roles);
+
+        return roles;
     }
 
     private List<Role> mapRoles(List<Map<String, Object>> rows) {
@@ -41,11 +47,17 @@ public class JDBCRoleRepository implements RoleRepository {
             role.setId((int)row.get("id"));
             role.setName((String) row.get("name"));
             role.setDescription((String)row.get("description"));
-            role.setAdmin((boolean)row.get("is_admin"));
 
             userRoles.add(role);
         }
 
         return userRoles;
+    }
+
+    private void setPermissions(List<Role> roles) {
+        for (Role role :
+                roles) {
+            role.setPermissions(this.permissionRepository.getPermissionsForRole(role.getId()));
+        }
     }
 }

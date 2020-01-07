@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
+@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCUserRepository implements UserRepository {
 
     @Autowired
@@ -166,9 +166,5 @@ public class JDBCUserRepository implements UserRepository {
         List<Role> userRoles = this.roleRepository.getUserRoles(user.getId());
 
         user.setRoles(userRoles);
-
-        List<Integer> ids = userRoles.stream().map(p -> p.getId()).collect(Collectors.toList());
-
-        user.setPermissions(permissionRepository.getPermissionsForRoles(ids));
     }
 }

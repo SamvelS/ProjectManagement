@@ -11,5 +11,8 @@
         <property name="show_sql">true</property>
 
         <mapping class="com.workfront.ProjectManagement.domain.ActionStatus"></mapping>
+        <mapping class="com.workfront.ProjectManagement.domain.Permission"></mapping>
+        <mapping class="com.workfront.ProjectManagement.domain.User"></mapping>
+        <mapping class="com.workfront.ProjectManagement.domain.Role"></mapping>
     </session-factory>
 </hibernate-configuration>
