@@ -10,6 +10,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ public class User {
 
     @Column(name = "status_id")
     private int statusId;
+
+    @Column(name = "created_on", updatable = false)
+    private Date createdOn;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable
@@ -113,4 +117,12 @@ public class User {
     public int getStatusId() { return this.statusId; }
 
     public void setStatusId(int statusId) { this.statusId = statusId; }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
 }

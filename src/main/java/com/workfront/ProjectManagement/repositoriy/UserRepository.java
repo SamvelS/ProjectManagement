@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserRepository {
     User getUserByEmail(String email, boolean getPassword);
 
-    User getUserById(int id);
+    User getUserById(int id, boolean getPassword);
 
     List<User> getUsers(int from, int count);
 

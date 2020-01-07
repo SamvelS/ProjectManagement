@@ -119,7 +119,7 @@ public class JDBCTaskRepository implements TaskRepository {
                 });
 
         if(taskDetails != null) {
-            taskDetails.setCreatedBy(this.userRepository.getUserById(taskDetails.getCreatedBy().getId()));
+            taskDetails.setCreatedBy(this.userRepository.getUserById(taskDetails.getCreatedBy().getId(), false));
             if(taskDetails.getParentTask().getId() != null) {
                 taskDetails.setParentTask(this.getTaskInfo(taskDetails.getParentTask().getId()));
             }

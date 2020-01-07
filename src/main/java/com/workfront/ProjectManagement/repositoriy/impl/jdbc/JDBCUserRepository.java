@@ -31,9 +31,6 @@ public class JDBCUserRepository implements UserRepository {
     private RoleRepository roleRepository;
 
     @Autowired
-    private PermissionRepository permissionRepository;
-
-    @Autowired
     private Beans beans;
 
     @Override
@@ -48,10 +45,10 @@ public class JDBCUserRepository implements UserRepository {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(int id, boolean getPassword) {
         User requestedUser =  this.jdbcTemplate.queryForObject("select * from account where id=?",
                 new Object[] { id },
-                (rs, i) -> this.createUserFromResultSet(rs, i, false));
+                (rs, i) -> this.createUserFromResultSet(rs, i, getPassword));
 
         this.initializeUserRolesAndPermissions(requestedUser);
 
@@ -98,7 +95,7 @@ public class JDBCUserRepository implements UserRepository {
                 " where id=?",
                 new Object[] { user.getEmail(), user.getFirstName(), user.getLastName(), user.getId() });
 
-        User createdUser = this.getUserById(user.getId());
+        User createdUser = this.getUserById(user.getId(), false);
 
         this.jdbcTemplate.update("delete from account_role where account_id=?", new Object[] { user.getId() });
 

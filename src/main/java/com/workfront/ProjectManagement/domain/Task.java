@@ -6,12 +6,16 @@ import com.workfront.ProjectManagement.constraint.NullableDateRangeMatch;
 import com.workfront.ProjectManagement.validationOrder.FirstOrder;
 import com.workfront.ProjectManagement.validationOrder.SecondOrder;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "task")
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Task {
