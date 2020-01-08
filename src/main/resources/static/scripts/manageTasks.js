@@ -139,7 +139,7 @@ async function loadTasksData(from = 1, count = 20) {
         name,
         description,
         status,
-        parentTask: parentTask.id === null ? '' : `<a href="/tasks/${parentTask.id}">${parentTask.name}</a>`,
+        parentTask: (parentTask === null || parentTask.id === null) ? '' : `<a href="/tasks/${parentTask.id}">${parentTask.name}</a>`,
         details: `<a href="/tasks/${id}">details</a>`
     }));
 
@@ -310,7 +310,7 @@ async function loadEditingTaskData(id) {
     await loadAllTasks();
 
     $('#parentTaskEdit option').each(function () {
-        if($(this).val() == task.parentTask.id) {
+        if(task.parentTask != null && $(this).val() == task.parentTask.id) {
             $(this).attr('selected', 'selected');
         }
     });

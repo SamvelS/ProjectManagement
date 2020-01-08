@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
+@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCTaskRepository implements TaskRepository {
 
     @Autowired

@@ -5,9 +5,10 @@ import com.workfront.ProjectManagement.constraint.DateRangeMatch;
 import com.workfront.ProjectManagement.constraint.NullableDateRangeMatch;
 import com.workfront.ProjectManagement.validationOrder.FirstOrder;
 import com.workfront.ProjectManagement.validationOrder.SecondOrder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -19,41 +20,65 @@ import java.util.List;
 @DateRangeMatch(startDate = "plannedStartDate", endDate = "plannedEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 @NullableDateRangeMatch(startDate = "actualStartDate", endDate = "actualEndDate", message = "Start Date should be before or equal to End Date", groups = FirstOrder.class)
 public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
+    @Column(name = "name")
     @NotBlank(message = "Name is required", groups = FirstOrder.class)
     @Size(min = 2, max = 100, message = "Name length should be between 2 and 100", groups = SecondOrder.class)
     private String name;
 
+    @Column(name = "description")
     @NotBlank(message = "Description is required", groups = FirstOrder.class)
     @Size(min = 2, max = 255, message = "Description length should be between 2 and 255", groups = SecondOrder.class)
     private String description;
 
+    @Column(name = "planned_start_date")
     @NotNull(message = "Start Date is required", groups = FirstOrder.class)
     @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedStartDate;
 
+    @Column(name = "planned_end_date")
     @NotNull(message = "End Date is required", groups = FirstOrder.class)
     @JsonFormat(pattern = "MM/dd/yyyy")
     private Date plannedEndDate;
 
+    @Column(name = "actual_start_date")
     @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualStartDate;
 
+    @Column(name = "actual_end_date")
     @JsonFormat(pattern = "MM/dd/yyyy")
     private Date actualEndDate;
 
     @JsonFormat(pattern = "MM/dd/yyyy")
+    @Column(name = "created_on", updatable = false)
     private Date createdOn;
 
+    @Transient
     private String status;
 
+    @Column(name = "project_id")
     private int projectId;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_task_id")
     private Task parentTask;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
     private User createdBy;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable
+            (
+                    name = "task_assignment",
+                    joinColumns = @JoinColumn(name = "task_id", referencedColumnName = "id"),
+                    inverseJoinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id")
+            )
+    @Fetch(FetchMode.SELECT)
     private List<User> assignees;
 
     public Integer getId() {

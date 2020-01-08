@@ -67,8 +67,8 @@
         <h5 class="space-from-top">Created By</h5>
         <span th:text="${task.getCreatedBy().getFirstName() + ' ' + task.getCreatedBy().getLastName() + ' [' + task.getCreatedBy().getEmail() + ']'}"></span>
         <h5 class="space-from-top">Parent Task</h5>
-        <a th:if="${task.getParentTask().getId() != null}" th:text="${task.getParentTask().getName()}" th:href="'/tasks/' + ${task.getParentTask().getId()}"></a>
-        <span th:if="${task.getParentTask().getId() == null}">None</span>
+        <a th:if="${task.getParentTask() != null && task.getParentTask().getId() != null}" th:text="${task.getParentTask().getName()}" th:href="'/tasks/' + ${task.getParentTask().getId()}"></a>
+        <span th:if="${task.getParentTask() == null || task.getParentTask().getId() == null}">None</span>
         <h5 class="space-from-top">Assigned To</h5>
         <span th:if="${task.getAssignees().isEmpty()}">None</span>
         <div th:if="${!task.getAssignees().isEmpty()}" th:each="assignee : ${task.getAssignees()}">
