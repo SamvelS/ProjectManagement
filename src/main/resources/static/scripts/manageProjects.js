@@ -74,7 +74,7 @@ async function loadEditingProjectData(id) {
     $('#statuses-edit').html(optionsAsString);
 
     $('#statuses-edit option').each(function() {
-        if($(this).text() === project.status) {
+        if($(this).val() == project.status.id) {
             $(this).attr('selected', 'selected');
         }
     });
@@ -154,7 +154,7 @@ async function editProject() {
         plannedEndDate: $('#plannedEndDateEdit').val(),
         actualStartDate: $('#actualStartDateEdit').val(),
         actualEndDate: $('#actualEndDateEdit').val(),
-        status: $('#statuses-edit option:selected').text()
+        status: { id: $('#statuses-edit option:selected').val() }
     };
 
     try {
@@ -201,7 +201,7 @@ async function loadProjectsData(from = 1, count = 20) {
         plannedEndDate,
         actualStartDate,
         actualEndDate,
-        status
+        status: status.name
     }));
 
     projectsDatagrid.datagrid({ data: (projects) });

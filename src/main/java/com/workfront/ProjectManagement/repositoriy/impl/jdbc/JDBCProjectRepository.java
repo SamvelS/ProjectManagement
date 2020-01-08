@@ -1,5 +1,6 @@
 package com.workfront.ProjectManagement.repositoriy.impl.jdbc;
 
+import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.Project;
 import com.workfront.ProjectManagement.repositoriy.ProjectRepository;
 import com.workfront.ProjectManagement.utilities.Constants;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-//@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
+@ConditionalOnProperty(name = "dbType", havingValue = "jdbc", matchIfMissing = true)
 public class JDBCProjectRepository implements ProjectRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -23,7 +24,7 @@ public class JDBCProjectRepository implements ProjectRepository {
     @Override
     public List<Project> getProjects(int from, int count) {
         List<Map<String, Object>> rows  = this.jdbcTemplate.queryForList("select prj.id, prj.name, prj.description, prj.planned_start_date,"
-                + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"
+                + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, prj.status_id, acts.name as status from project prj"
                         + " left join action_status acts on acts.id = prj.status_id"
                         + " order by id limit ? offset ?",
                 new Object[] { count, from });
@@ -34,7 +35,7 @@ public class JDBCProjectRepository implements ProjectRepository {
     @Override
     public List<Project> getProjectsByStatusId(int statusId) {
         String query = "select prj.id, prj.name, prj.description, prj.planned_start_date,"
-                + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"
+                + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, prj.status_id, acts.name as status from project prj"
                 + " left join action_status acts on acts.id = prj.status_id";
 
         if(statusId != Constants.getAllStatusesId()) {
@@ -53,7 +54,7 @@ public class JDBCProjectRepository implements ProjectRepository {
     @Override
     public Project getProjectById(int id) {
         return this.jdbcTemplate.queryForObject("select prj.id, prj.name, prj.description, prj.planned_start_date,"
-                        + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, acts.name as status from project prj"
+                        + " prj.planned_end_date, prj.actual_start_date, prj.actual_end_date, prj.status_id, acts.name as status from project prj"
                         + " left join action_status acts on acts.id = prj.status_id"
                         + " where prj.id=?",
                 new Object[] { id }, (rs, i) -> {
@@ -65,7 +66,11 @@ public class JDBCProjectRepository implements ProjectRepository {
                     prj.setPlannedEndDate(rs.getTimestamp("planned_end_date"));
                     prj.setActualStartDate(rs.getTimestamp("actual_start_date"));
                     prj.setActualEndDate(rs.getTimestamp("actual_end_date"));
-                    prj.setStatus(rs.getString("status"));
+
+                    ActionStatus status = new ActionStatus();
+                    status.setId(rs.getInt("status_id"));
+                    status.setName(rs.getString("status"));
+                    prj.setStatus(status);
 
                     return prj;
                 });
@@ -85,9 +90,9 @@ public class JDBCProjectRepository implements ProjectRepository {
     @Override
     public void editProject(Project project) {
         this.jdbcTemplate.update("update project set name=?, description=?, planned_start_date=?, planned_end_date=?, actual_start_date=?, actual_end_date=?," +
-                " status_id=(select id from action_status where name=?) where id=?",
+                " status_id=? where id=?",
                 new Object[]{ project.getName(), project.getDescription(), project.getPlannedStartDate(), project.getPlannedEndDate(), project.getActualStartDate(),
-                project.getActualEndDate(), project.getStatus(), project.getId() });
+                project.getActualEndDate(), project.getStatus().getId(), project.getId() });
     }
 
     @Transactional
@@ -112,7 +117,10 @@ public class JDBCProjectRepository implements ProjectRepository {
             project.setPlannedEndDate((Date) row.get("planned_end_date"));
             project.setActualStartDate((Date) row.get("actual_start_date"));
             project.setActualEndDate((Date) row.get("actual_end_date"));
-            project.setStatus((String) row.get("status"));
+            ActionStatus status = new ActionStatus();
+            status.setId((int)row.get("status_id"));
+            status.setName((String) row.get("status"));
+            project.setStatus(status);
 
             projects.add(project);
         }

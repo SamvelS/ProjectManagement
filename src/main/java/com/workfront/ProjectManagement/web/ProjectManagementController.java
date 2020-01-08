@@ -6,6 +6,7 @@ import com.workfront.ProjectManagement.domain.ActionStatus;
 import com.workfront.ProjectManagement.domain.Project;
 import com.workfront.ProjectManagement.services.ProjectManagementService;
 import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class ProjectManagementController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> processAddUser(@RequestBody @Validated(OrderedValidation.class) Project project, Errors errors) {
+    public ResponseEntity<String> processProjectUser(@RequestBody @Validated(OrderedValidation.class) Project project, Errors errors) {
         if(errors.hasErrors()) {
             Map<String, String> fieldErrorsMap = new HashMap<>();
             errors.getFieldErrors().stream().forEach(err -> {
@@ -80,7 +81,7 @@ public class ProjectManagementController {
         try {
             this.projectManagementService.createProject(project);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("name", "Project with name '" + project.getName() + "' already exists"));
 
@@ -114,7 +115,7 @@ public class ProjectManagementController {
         try {
             this.projectManagementService.editProject(project);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException  ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("name", "Project with name '" + project.getName() + "' already exists"));
 

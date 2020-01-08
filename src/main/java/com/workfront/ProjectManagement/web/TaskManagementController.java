@@ -9,6 +9,7 @@ import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.services.TaskManagementService;
 import com.workfront.ProjectManagement.utilities.Constants;
 import com.workfront.ProjectManagement.validationOrder.OrderedValidation;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -103,7 +104,7 @@ public class TaskManagementController {
         try {
             this.taskManagementService.createTask(task);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("name", "Task with name '" + task.getName() + "' already exists"));
 
@@ -144,7 +145,7 @@ public class TaskManagementController {
         try {
             this.taskManagementService.editTask(task);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException  ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("name", "Task with name '" + task.getName() + "' already exists"));
 

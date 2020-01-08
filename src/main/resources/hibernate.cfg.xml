@@ -14,5 +14,6 @@
         <mapping class="com.workfront.ProjectManagement.domain.Permission"></mapping>
         <mapping class="com.workfront.ProjectManagement.domain.User"></mapping>
         <mapping class="com.workfront.ProjectManagement.domain.Role"></mapping>
+        <mapping class="com.workfront.ProjectManagement.domain.Project"></mapping>
     </session-factory>
 </hibernate-configuration>

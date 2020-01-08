@@ -10,6 +10,7 @@ import com.workfront.ProjectManagement.domain.Role;
 import com.workfront.ProjectManagement.domain.User;
 import com.workfront.ProjectManagement.services.UserManagementService;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -86,7 +87,7 @@ public class UserManagementController {
         try {
             this.userManagementService.createUser(user);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("email", "Email " + user.getEmail() + " already exists"));
 
@@ -120,7 +121,7 @@ public class UserManagementController {
         try {
             this.userManagementService.editUser(user);
         }
-        catch (DuplicateKeyException ignore) {
+        catch (DuplicateKeyException | ConstraintViolationException  ignore) {
             List<Pair<String, String>> fieldErrors = new ArrayList<>();
             fieldErrors.add(new Pair<>("email", "Email " + user.getEmail() + " already exists"));
 
